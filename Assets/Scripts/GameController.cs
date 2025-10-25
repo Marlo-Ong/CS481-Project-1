@@ -197,6 +197,8 @@ namespace SheepGame.Gameplay
             State.Forces.Add(new ForceInstance(cell, typeIndex, State.CurrentPlayer));
             State.RemainingByPlayerType[State.CurrentPlayer, typeIndex] -= 1;
 
+            SoundManager.Instance?.PlayPlaceForce();
+
             // Flip turn BEFORE sim (as agreed)
             State.CurrentPlayer = 1 - State.CurrentPlayer;
 
