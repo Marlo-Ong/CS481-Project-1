@@ -17,6 +17,7 @@ namespace SheepGame.Gameplay
         [Header("Setup")]
         [SerializeField] private LevelData levelData;
         [SerializeField] private GridConfig config;
+        private UIManager ui;
 
         [Header("Players")]
         [Tooltip("If true, Player 0 is controlled by AI.")]
@@ -64,8 +65,25 @@ namespace SheepGame.Gameplay
             }
         }
 
+        private bool isPaused = false;
+        void OnEnable()
+        {
+            UIManager.OnPauseStateChanged += HandlePause;
+        }
+
+        void OnDisable()
+        {
+            UIManager.OnPauseStateChanged -= HandlePause;
+        }
+
+        private void HandlePause(bool paused)
+        {
+            isPaused = paused;
+        }
+
         void Start()
         {
+            ui = FindFirstObjectByType<UIManager>();
             if (levelData == null || config == null)
             {
                 Debug.LogError("GameController: Assign LevelData and GridConfig.");
@@ -86,7 +104,7 @@ namespace SheepGame.Gameplay
 
         void FixedUpdate()
         {
-            if (State == null) return;
+            if (isPaused || State == null) return;
 
             if (IsSimulating)
             {
@@ -116,6 +134,8 @@ namespace SheepGame.Gameplay
                     if (IsTerminal())
                     {
                         // Optionally: announce game over here
+                        CheckGameOver();
+
                         return;
                     }
 
@@ -205,6 +225,17 @@ namespace SheepGame.Gameplay
             for (int t = 0; t < State.ForceTypes.Length; t++)
                 if (State.RemainingByPlayerType[player, t] > 0) return true;
             return false;
+        }
+
+        private void CheckGameOver()
+        {
+            if (State == null) return;
+
+            int playerScore = State.Score[0];
+            int aiScore = State.Score[1];
+
+            bool playerWon = playerScore > aiScore;
+            ui?.OnShowResult(playerWon);
         }
 
         // ============ Gizmos for quick visualization ============
