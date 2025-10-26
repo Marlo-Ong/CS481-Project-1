@@ -18,5 +18,6 @@ AssetOrigin:
   productId: 61661
   packageName: Low Poly Fence Pack
   packageVersion: 1.1
-  assetPath: Assets/BrokenVector/LowPolyFencePack/Prefabs/Animated/Fence Type3 Door.prefab
+  assetPath: Assets/Imported Assets/Fences - LowPoly/Prefabs/Animated/Fence Type3
+    Door.prefab
   uploadId: 253910

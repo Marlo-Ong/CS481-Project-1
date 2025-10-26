@@ -101,6 +101,7 @@ public class UIManager : MonoBehaviour
     {
         SoundManager.Instance?.PlayClick();
         Show(menuPanel, false);
+        Show(endPanel, false);
         Show(creditsPanel, true);
     }
 
@@ -110,7 +111,15 @@ public class UIManager : MonoBehaviour
         // Back from Credits or Levels → return to main menu
         Show(creditsPanel, false);
         Show(levelsPanel, false);
-        Show(menuPanel, true);
+
+        if(SceneManager.GetActiveScene().name == startSceneName) 
+        { 
+            Show(menuPanel, true); 
+        }
+        if (SceneManager.GetActiveScene().name == gameplaySceneName)
+        {
+            Show(endPanel, true);
+        }
     }
 
     public void OnQuitPressed()
