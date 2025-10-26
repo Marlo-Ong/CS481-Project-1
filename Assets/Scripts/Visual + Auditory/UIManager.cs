@@ -192,6 +192,7 @@ public class UIManager : MonoBehaviour
         SoundManager.Instance?.PlayClick();
         Show(pausePanel, false);
         Show(endPanel, true);
+        Show(winPanel, false);
         OnPauseStateChanged?.Invoke(false);
     }
 
