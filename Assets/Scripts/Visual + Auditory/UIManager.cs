@@ -13,6 +13,7 @@ public class UIManager : MonoBehaviour
     public GameObject levelsPanel;
     public GameObject pausePanel;
     public GameObject winPanel;
+    public GameObject endPanel;
 
     [Header("Scene Names")]
     public string gameplaySceneName = "SampleScene"; // Change as needed
@@ -77,6 +78,7 @@ public class UIManager : MonoBehaviour
         Show(levelsPanel, false);
         Show(pausePanel, false);
         Show(winPanel, false);
+        Show(endPanel, false);
     }
 
     private static void Show(GameObject go, bool v) { if (go) go.SetActive(v); }
@@ -174,6 +176,14 @@ public class UIManager : MonoBehaviour
         isPaused = false;
         HideAllPanels();
         SceneManager.LoadScene(startSceneName);
+    }
+
+    public void OnContinuePressed()
+    {
+        SoundManager.Instance?.PlayClick();
+        Show(pausePanel, false);
+        Show(endPanel, true);
+        OnPauseStateChanged?.Invoke(false);
     }
 
 }
