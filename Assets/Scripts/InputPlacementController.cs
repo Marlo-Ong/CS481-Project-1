@@ -12,6 +12,10 @@ namespace SheepGame.Gameplay
         [SerializeField] private GameController controller;
         [SerializeField] private Color legalColor = new Color(0.2f, 1f, 0.2f, 0.35f);
         [SerializeField] private Color illegalColor = new Color(1f, 0.2f, 0.2f, 0.35f);
+        [SerializeField] private Grid grid;
+        [SerializeField] private GameObject hoverTile;
+        [SerializeField] private LayerMask boardMask;
+        [SerializeField] private GameObject forcePrefab;
 
         private int _selectedType = 0;
         private bool _hasHover;
@@ -36,8 +40,14 @@ namespace SheepGame.Gameplay
                 }
             }
 
-            // Hover cell under mouse (XY plane, z=0)
+            // Hover cell under mouse
             _hasHover = TryGetMouseCell(out _hoverCell);
+            if (_hasHover)
+            {
+                bool legal = controller.IsPlacementLegal(controller.State, controller.State.CurrentPlayer, _hoverCell, _selectedType);
+                var cellPos = grid.CellToWorld(new Vector3Int(_hoverCell.x, 0, _hoverCell.y));
+                hoverTile.transform.position = cellPos;
+            }
 
             // Early out if not human's turn or simulating
             if (!controller.IsHumanTurn || controller.IsSimulating) return;
@@ -45,38 +55,37 @@ namespace SheepGame.Gameplay
             // Click to place
             if (_hasHover && Input.GetMouseButtonDown(0))
             {
-                controller.TryPlaceHumanForce(_hoverCell, _selectedType);
+                if (controller.TryPlaceHumanForce(_hoverCell, _selectedType))
+                {
+                    DecoratePlaceForce();
+                }
             }
         }
 
         private bool TryGetMouseCell(out int2 cell)
         {
             cell = default;
+
             Camera cam = Camera.main;
-            if (!cam) return false;
+            if (!cam)
+                return false;
 
-            Ray ray = cam.ScreenPointToRay(Input.mousePosition);
-            // Intersect with z=0 plane
-            if (math.abs(ray.direction.z) < 1e-6f) return false;
-            float t = -ray.origin.z / ray.direction.z;
-            if (t < 0f) return false;
-
-            Vector3 hit = ray.origin + t * ray.direction;
-            int x = Mathf.FloorToInt(hit.x);
-            int y = Mathf.FloorToInt(hit.y);
-
-            if (x < 0 || y < 0 || controller.N == 0 || x >= controller.N || y >= controller.N) return false;
-            cell = new int2(x, y);
-            return true;
+            var mousePosition = Input.mousePosition;
+            Ray ray = cam.ScreenPointToRay(mousePosition);
+            if (Physics.Raycast(ray, out var hit, maxDistance: 1000f, boardMask))
+            {
+                Vector3 worldPos = hit.point;
+                Vector3Int worldCell = grid.WorldToCell(worldPos);
+                cell = new int2(worldCell.x, worldCell.z);
+                return true;
+            }
+            return false;
         }
 
-        void OnDrawGizmos()
+        private void DecoratePlaceForce()
         {
-            if (!controller || controller.State == null || !_hasHover) return;
-
-            bool legal = controller.IsPlacementLegal(controller.State, controller.State.CurrentPlayer, _hoverCell, _selectedType);
-            Gizmos.color = legal ? legalColor : illegalColor;
-            Gizmos.DrawCube(new Vector3(_hoverCell.x + 0.5f, _hoverCell.y + 0.5f, 0), new Vector3(1f, 1f, 0.01f));
+            var force = Instantiate(forcePrefab);
+            force.transform.position = grid.CellToWorld(new Vector3Int(_hoverCell.x, 0, _hoverCell.y));
         }
 
         void OnGUI()
