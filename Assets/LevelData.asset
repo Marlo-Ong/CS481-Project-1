@@ -19,15 +19,15 @@ MonoBehaviour:
   - {x: 4, y: 5}
   - {x: 5, y: 5}
   pen0:
-    x: 0
+    x: 4
     y: 0
-    width: 2
-    height: 4
+    width: 3
+    height: 1
   pen1:
-    x: 8
-    y: 3
-    width: 2
-    height: 4
+    x: 4
+    y: 9
+    width: 3
+    height: 1
   forceTypes:
   - {fileID: 11400000, guid: e7f7239af4c6f40ae8adb5769bff61e0, type: 2}
   - {fileID: 11400000, guid: 9c664819989f2461181631dca4712a60, type: 2}

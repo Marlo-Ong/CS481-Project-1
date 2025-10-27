@@ -20,7 +20,8 @@ namespace SheepGame.Gameplay
         [Header("Game Prefabs")]
         [SerializeField] private GameObject p1PenPrefab;
         [SerializeField] private GameObject p2PenPrefab;
-        [SerializeField] private GameObject forcePrefab;
+        [SerializeField] private GameObject forceAttractPrefab;
+        [SerializeField] private GameObject forceRepelPrefab;
         [SerializeField] private GameObject obstaclePrefab;
         [SerializeField] private GameObject sheepPrefab;
 
@@ -109,7 +110,8 @@ namespace SheepGame.Gameplay
 
         private void OnForcePlaced(ForceInstance instance)
         {
-            var force = Instantiate(forcePrefab);
+            bool attracts = State.ForceTypes[instance.ForceTypeIndex].IsAttractor;
+            var force = Instantiate(attracts ? forceAttractPrefab : forceRepelPrefab);
             force.transform.position = SimToWorld(instance.Cell);
         }
 

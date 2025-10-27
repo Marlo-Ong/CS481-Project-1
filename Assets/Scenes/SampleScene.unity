@@ -14239,7 +14239,8 @@ MonoBehaviour:
     m_Bits: 64
   p1PenPrefab: {fileID: 9084258209113086006, guid: 0f43ad78d12464c39817681ef772fe3e, type: 3}
   p2PenPrefab: {fileID: 9084258209113086006, guid: 8c2546340281146189f77353326a1f21, type: 3}
-  forcePrefab: {fileID: 2511882140321850065, guid: 9e75c94ae045a48d1925e8cec30e5c8c, type: 3}
+  forceAttractPrefab: {fileID: 7328719584578877956, guid: 8f787789b1379420087cc62c62de3324, type: 3}
+  forceRepelPrefab: {fileID: 7328719584578877956, guid: e3747ec663b7c44aaa05362fc15d35f0, type: 3}
   obstaclePrefab: {fileID: 2511882140321850065, guid: 79e05cd5cc45a4100bbdb45c2fbfa0d0, type: 3}
   sheepPrefab: {fileID: 2511882140321850065, guid: 83d1241df276c41549921362bb801e7e, type: 3}
 --- !u!114 &1464157930
