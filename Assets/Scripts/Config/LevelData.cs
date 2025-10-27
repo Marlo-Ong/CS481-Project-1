@@ -129,13 +129,22 @@ namespace SheepGame.Data
             return state;
         }
 
-        private static PenRegion RectToPen(RectInt r)
+        public static PenRegion RectToPen(RectInt r)
         {
             // Convert tile rect [x, y, w, h] to a closed rectangle in world/tile space:
             // Min = (x, y), Max = (x + w, y + h)
             var min = new float2(r.xMin, r.yMin);
             var max = new float2(r.xMin + r.width, r.yMin + r.height);
             return new PenRegion(min, max);
+        }
+
+        public static RectInt PenToRect(PenRegion region)
+        {
+            int xMin = (int)region.Min.x;
+            int yMin = (int)region.Min.y;
+            int width = (int)region.Max.x - xMin;
+            int height = (int)region.Max.y - yMin;
+            return new RectInt(xMin, yMin, width, height);
         }
 
         private static bool InBounds(Vector2Int c, int N)

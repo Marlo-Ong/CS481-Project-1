@@ -14232,14 +14232,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SheepGame.Gameplay.InputPlacementController
   controller: {fileID: 1464157930}
-  legalColor: {r: 0.2, g: 1, b: 0.2, a: 0.35}
-  illegalColor: {r: 1, g: 0.2, b: 0.2, a: 0.35}
   grid: {fileID: 1701489897}
   hoverTile: {fileID: 457381168}
   boardMask:
     serializedVersion: 2
     m_Bits: 64
+  p1PenPrefab: {fileID: 9084258209113086006, guid: 0f43ad78d12464c39817681ef772fe3e, type: 3}
+  p2PenPrefab: {fileID: 9084258209113086006, guid: 8c2546340281146189f77353326a1f21, type: 3}
   forcePrefab: {fileID: 2511882140321850065, guid: 9e75c94ae045a48d1925e8cec30e5c8c, type: 3}
+  obstaclePrefab: {fileID: 2511882140321850065, guid: 79e05cd5cc45a4100bbdb45c2fbfa0d0, type: 3}
+  sheepPrefab: {fileID: 2511882140321850065, guid: 83d1241df276c41549921362bb801e7e, type: 3}
 --- !u!114 &1464157930
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -14256,12 +14258,6 @@ MonoBehaviour:
   config: {fileID: 11400000, guid: ea8219a51c44a4f0f8c48c1068ae844d, type: 2}
   aiPlaysPlayer0: 0
   aiPlaysPlayer1: 1
-  gridColor: {r: 1, g: 1, b: 1, a: 0.15}
-  obstacleColor: {r: 0.2, g: 0.2, b: 0.2, a: 0.8}
-  pen0Color: {r: 0.2, g: 0.7, b: 1, a: 1}
-  pen1Color: {r: 1, g: 0.6, b: 0.2, a: 1}
-  forceColor: {r: 0.8, g: 0.9, b: 0.1, a: 0.8}
-  sheepColor: {r: 1, g: 1, b: 1, a: 1}
 --- !u!4 &1464157931
 Transform:
   m_ObjectHideFlags: 0
@@ -17608,13 +17604,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1701489895}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071068}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: -18}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1256971096}
-  m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!156049354 &1701489897
 Grid:
   m_ObjectHideFlags: 0
@@ -17626,7 +17622,7 @@ Grid:
   m_CellSize: {x: 2, y: 2, z: 2}
   m_CellGap: {x: 0, y: 0, z: 0}
   m_CellLayout: 0
-  m_CellSwizzle: 1
+  m_CellSwizzle: 0
 --- !u!1 &1712346937
 GameObject:
   m_ObjectHideFlags: 0

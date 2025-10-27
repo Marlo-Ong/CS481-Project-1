@@ -26,14 +26,6 @@ namespace SheepGame.Gameplay
         [Tooltip("If true, Player 1 is controlled by AI.")]
         [SerializeField] private bool aiPlaysPlayer1 = true;
 
-        [Header("Visuals")]
-        [SerializeField] private Color gridColor = new Color(1f, 1f, 1f, 0.15f);
-        [SerializeField] private Color obstacleColor = new Color(0.2f, 0.2f, 0.2f, 0.8f);
-        [SerializeField] private Color pen0Color = new Color(0.2f, 0.7f, 1f, 0.2f);
-        [SerializeField] private Color pen1Color = new Color(1f, 0.6f, 0.2f, 0.2f);
-        [SerializeField] private Color forceColor = new Color(0.8f, 0.9f, 0.1f, 0.8f);
-        [SerializeField] private Color sheepColor = new Color(1f, 1f, 1f, 1f);
-
         public GameState State { get; private set; }
 
         // Simulation animation state
@@ -46,6 +38,10 @@ namespace SheepGame.Gameplay
         // For convenience from other scripts
         public int N => State?.N ?? 0;
         public GridConfig Config => config;
+
+        // Events
+        public event Action<ForceInstance> ForcePlaced;
+        public event Action<GameState> StateSet;
 
         public bool IsAITurn
         {
@@ -92,8 +88,8 @@ namespace SheepGame.Gameplay
             }
 
             // Build initial state from authored level + config seed
-            uint seed;
-            State = levelData.ToGameState(config, out seed);
+            State = levelData.ToGameState(config, out uint seed);
+            StateSet?.Invoke(State);
 
             // Start of first turn: not simulating yet, waiting for placement.
             IsSimulating = false;
@@ -194,10 +190,12 @@ namespace SheepGame.Gameplay
         private void PlaceForceAndBeginSim(int2 cell, int typeIndex)
         {
             // Place force for current player
-            State.Forces.Add(new ForceInstance(cell, typeIndex, State.CurrentPlayer));
+            var force = new ForceInstance(cell, typeIndex, State.CurrentPlayer);
+            State.Forces.Add(force);
             State.RemainingByPlayerType[State.CurrentPlayer, typeIndex] -= 1;
 
             SoundManager.Instance?.PlayPlaceForce();
+            ForcePlaced?.Invoke(force);
 
             // Flip turn BEFORE sim (as agreed)
             State.CurrentPlayer = 1 - State.CurrentPlayer;
@@ -225,7 +223,10 @@ namespace SheepGame.Gameplay
         private bool AnyForcesLeft(int player)
         {
             for (int t = 0; t < State.ForceTypes.Length; t++)
-                if (State.RemainingByPlayerType[player, t] > 0) return true;
+            {
+                if (State.RemainingByPlayerType[player, t] > 0)
+                    return true;
+            }
             return false;
         }
 
@@ -238,66 +239,6 @@ namespace SheepGame.Gameplay
 
             bool playerWon = playerScore > aiScore;
             ui?.OnShowResult(playerWon);
-        }
-
-        // ============ Gizmos for quick visualization ============
-
-        void OnDrawGizmos()
-        {
-            if (State == null || !config || !config.debugVisualAids) return;
-            int n = State.N;
-
-            // Grid
-            Gizmos.color = gridColor;
-            for (int x = 0; x <= n; x++)
-            {
-                Gizmos.DrawLine(new Vector3(x, 0, 0), new Vector3(x, n, 0));
-            }
-            for (int y = 0; y <= n; y++)
-            {
-                Gizmos.DrawLine(new Vector3(0, y, 0), new Vector3(n, y, 0));
-            }
-
-            // Obstacles
-            Gizmos.color = obstacleColor;
-            for (int y = 0; y < n; y++)
-                for (int x = 0; x < n; x++)
-                {
-                    if (State.Obstacles.IsBlocked(new int2(x, y)))
-                    {
-                        Gizmos.DrawCube(new Vector3(x + 0.5f, y + 0.5f, 0), new Vector3(1f, 1f, 0.01f));
-                    }
-                }
-
-            // Pens
-            Gizmos.color = pen0Color;
-            DrawRect(State.Pens[0].Min, State.Pens[0].Max);
-            Gizmos.color = pen1Color;
-            DrawRect(State.Pens[1].Min, State.Pens[1].Max);
-
-            // Forces
-            Gizmos.color = forceColor;
-            foreach (var f in State.Forces)
-            {
-                var p = SheepConstants.CellCenter(f.Cell);
-                Gizmos.DrawSphere(new Vector3(p.x, p.y, 0), 0.15f);
-            }
-
-            // Sheep
-            Gizmos.color = sheepColor;
-            foreach (var p in State.SheepPos)
-            {
-                Gizmos.DrawSphere(new Vector3(p.x, p.y, 0), 0.1f);
-            }
-        }
-
-        private static void DrawRect(float2 min, float2 max)
-        {
-            Vector3 a = new Vector3(min.x, min.y, 0);
-            Vector3 b = new Vector3(max.x, min.y, 0);
-            Vector3 c = new Vector3(max.x, max.y, 0);
-            Vector3 d = new Vector3(min.x, max.y, 0);
-            Gizmos.DrawLine(a, b); Gizmos.DrawLine(b, c); Gizmos.DrawLine(c, d); Gizmos.DrawLine(d, a);
         }
     }
 }

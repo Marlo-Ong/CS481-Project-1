@@ -29,7 +29,13 @@ namespace SheepGame.AI
             // Quick exit if player has nothing to place
             bool anyRemaining = false;
             for (int t = 0; t < types; t++)
-                if (state.RemainingByPlayerType[playerIndex, t] > 0) { anyRemaining = true; break; }
+            {
+                if (state.RemainingByPlayerType[playerIndex, t] > 0)
+                {
+                    anyRemaining = true;
+                    break;
+                }
+            }
             if (!anyRemaining) return;
 
             // Build occupancy map for forces (no stacking on same cell)
@@ -48,6 +54,7 @@ namespace SheepGame.AI
             if (candidateCells.Count == 0)
             {
                 for (int y = 0; y < n; y++)
+                {
                     for (int x = 0; x < n; x++)
                     {
                         int idx = y * n + x;
@@ -56,6 +63,7 @@ namespace SheepGame.AI
                         if (forceOccupied[idx]) continue;
                         candidateCells.Add(new int2(x, y));
                     }
+                }
             }
 
             // For each force type with remaining count, rank candidate cells and keep top-K
@@ -102,6 +110,7 @@ namespace SheepGame.AI
                     if (state.RemainingByPlayerType[playerIndex, type] <= 0) continue;
 
                     for (int y = 0; y < n; y++)
+                    {
                         for (int x = 0; x < n; x++)
                         {
                             int idx = y * n + x;
@@ -111,6 +120,7 @@ namespace SheepGame.AI
                             outMoves.Add(new ForcePlacement(new int2(x, y), type));
                             return;
                         }
+                    }
                 }
             }
         }
@@ -131,6 +141,7 @@ namespace SheepGame.AI
                 int cy = math.clamp((int)math.floor(p.y), 0, n - 1);
 
                 for (int dy = -R; dy <= R; dy++)
+                {
                     for (int dx = -R; dx <= R; dx++)
                     {
                         int x = cx + dx;
@@ -147,6 +158,7 @@ namespace SheepGame.AI
                         // Do not filter pens here; rules allow placing in pens.
                         candidates.Add(new int2(x, y));
                     }
+                }
             }
 
             return candidates;

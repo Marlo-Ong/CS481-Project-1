@@ -76,8 +76,10 @@ namespace SheepGame.AI
             }
             // Disallow stacking
             for (int i = 0; i < s.Forces.Count; i++)
+            {
                 if (s.Forces[i].Cell.x == cell.x && s.Forces[i].Cell.y == cell.y)
                 { nextState = s; return; }
+            }
 
             s.Forces.Add(new ForceInstance(cell, move.ForceTypeIndex, s.CurrentPlayer));
             s.RemainingByPlayerType[s.CurrentPlayer, move.ForceTypeIndex] -= 1;
@@ -102,7 +104,9 @@ namespace SheepGame.AI
         private static bool AnyForcesLeft(in GameState s, int player)
         {
             for (int t = 0; t < s.ForceTypes.Length; t++)
+            {
                 if (s.RemainingByPlayerType[player, t] > 0) return true;
+            }
             return false;
         }
     }

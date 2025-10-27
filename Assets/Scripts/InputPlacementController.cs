@@ -4,26 +4,51 @@
 using UnityEngine;
 using Unity.Mathematics;
 using SheepGame.Sim;
+using SheepGame.Data;
 
 namespace SheepGame.Gameplay
 {
     public sealed class InputPlacementController : MonoBehaviour
     {
         [SerializeField] private GameController controller;
-        [SerializeField] private Color legalColor = new Color(0.2f, 1f, 0.2f, 0.35f);
-        [SerializeField] private Color illegalColor = new Color(1f, 0.2f, 0.2f, 0.35f);
         [SerializeField] private Grid grid;
+
+        [Header("World UI")]
         [SerializeField] private GameObject hoverTile;
         [SerializeField] private LayerMask boardMask;
+
+        [Header("Game Prefabs")]
+        [SerializeField] private GameObject p1PenPrefab;
+        [SerializeField] private GameObject p2PenPrefab;
         [SerializeField] private GameObject forcePrefab;
+        [SerializeField] private GameObject obstaclePrefab;
+        [SerializeField] private GameObject sheepPrefab;
+
+        private GameState State => controller.State;
 
         private int _selectedType = 0;
         private bool _hasHover;
         private int2 _hoverCell;
 
-        void Reset()
+        void Start()
         {
-            controller = FindAnyObjectByType<GameController>();
+            if (controller == null)
+            {
+                Debug.LogError("GameControlelr not assigned in InputPlacementController.");
+                return;
+            }
+
+            if (controller.State == null)
+                controller.StateSet += OnStateSet;
+            else
+                DrawBoardStateStatics(controller.State);
+
+            controller.ForcePlaced += OnForcePlaced;
+        }
+
+        private void OnStateSet(GameState state)
+        {
+            DrawBoardStateStatics(State);
         }
 
         void Update()
@@ -54,12 +79,12 @@ namespace SheepGame.Gameplay
 
             // Click to place
             if (_hasHover && Input.GetMouseButtonDown(0))
-            {
-                if (controller.TryPlaceHumanForce(_hoverCell, _selectedType))
-                {
-                    DecoratePlaceForce();
-                }
-            }
+                controller.TryPlaceHumanForce(_hoverCell, _selectedType);
+        }
+
+        void FixedUpdate()
+        {
+            DrawBoardStateDynamics(State);
         }
 
         private bool TryGetMouseCell(out int2 cell)
@@ -82,10 +107,10 @@ namespace SheepGame.Gameplay
             return false;
         }
 
-        private void DecoratePlaceForce()
+        private void OnForcePlaced(ForceInstance instance)
         {
             var force = Instantiate(forcePrefab);
-            force.transform.position = grid.CellToWorld(new Vector3Int(_hoverCell.x, 0, _hoverCell.y));
+            force.transform.position = SimToWorld(instance.Cell);
         }
 
         void OnGUI()
@@ -109,6 +134,76 @@ namespace SheepGame.Gameplay
             GUILayout.Space(6);
             GUILayout.Label(_hasHover ? $"Hover: ({_hoverCell.x},{_hoverCell.y})" : "Hover: —");
             GUILayout.EndArea();
+        }
+
+        private void DrawBoardStateStatics(GameState state)
+        {
+            if (state == null)
+                return;
+
+            // Pens
+            var pen1 = Instantiate(p1PenPrefab);
+            var pen2 = Instantiate(p2PenPrefab);
+
+            var rect = LevelData.PenToRect(state.Pens[0]);
+            pen1.transform.position = SimToWorld(new int2(rect.x, rect.y));
+            pen1.transform.localScale = new Vector3(rect.size.x, 0, rect.size.y);
+
+            rect = LevelData.PenToRect(state.Pens[1]);
+            pen2.transform.position = SimToWorld(new int2(rect.x, rect.y));
+            pen2.transform.localScale = new Vector3(rect.size.x, 0, rect.size.y);
+
+            // Obstacles
+            int n = state.N;
+            int2 curr = int2.zero;
+
+            for (curr.y = 0; curr.y < n; curr.y++)
+            {
+                for (curr.x = 0; curr.x < n; curr.x++)
+                {
+                    if (state.Obstacles.IsBlocked(curr))
+                    {
+                        var obstacle = Instantiate(obstaclePrefab);
+                        obstacle.transform.position = SimToWorld(curr);
+                    }
+                }
+            }
+        }
+
+        private void DrawBoardStateDynamics(GameState state)
+        {
+            // // Sheep
+            // foreach (var p in State.SheepPos)
+            //     Gizmos.DrawSphere(center: new Vector3(p.x, p.y), radius: 1);
+        }
+
+        /// <summary>
+        /// Converts a GameState int2 cell to a world position, interpolated by the visual grid.
+        /// </summary>
+        private Vector3 SimToWorld(int2 cell)
+        {
+            // Get XZ grid cell from XY simulation cell.
+            var gridCell = new Vector3Int(cell.x, 0, cell.y);
+            return grid.CellToWorld(gridCell);
+        }
+
+        /// <summary>
+        /// Converts a GameState float2 position to a world position, interpolated by the visual grid.
+        /// </summary>
+        private Vector3 SimToWorld(float2 pos)
+        {
+            var local = new Vector3(pos.x, 0, pos.y);
+            return grid.transform.TransformPoint(local);
+        }
+
+        void OnDrawGizmos()
+        {
+            if (State == null)
+                return;
+
+            // Sheep
+            foreach (var p in State.SheepPos)
+                Gizmos.DrawSphere(center: SimToWorld(p), radius: 0.2f);
         }
     }
 }
