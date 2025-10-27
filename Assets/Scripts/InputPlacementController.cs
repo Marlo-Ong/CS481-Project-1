@@ -5,6 +5,7 @@ using UnityEngine;
 using Unity.Mathematics;
 using SheepGame.Sim;
 using SheepGame.Data;
+using System.Collections.Generic;
 
 namespace SheepGame.Gameplay
 {
@@ -30,6 +31,8 @@ namespace SheepGame.Gameplay
         private int _selectedType = 0;
         private bool _hasHover;
         private int2 _hoverCell;
+        private List<Transform> sheepInstances = new();
+        private Vector3[] previousPositions;
 
         void Start()
         {
@@ -85,7 +88,8 @@ namespace SheepGame.Gameplay
 
         void FixedUpdate()
         {
-            DrawBoardStateDynamics(State);
+            if (controller.IsSimulating)
+                DrawBoardStateDynamics(State);
         }
 
         private bool TryGetMouseCell(out int2 cell)
@@ -170,13 +174,61 @@ namespace SheepGame.Gameplay
                     }
                 }
             }
+
+            // Sheep
+            previousPositions = new Vector3[state.SheepPos.Length];
+            for (int i = 0; i < state.SheepPos.Length; i++)
+            {
+                var sheep = Instantiate(sheepPrefab).transform;
+                var pos = state.SheepPos[i];
+                sheep.position = new Vector3(pos.x, 0, pos.y);
+
+                previousPositions[i] = sheep.position;
+                sheepInstances.Add(sheep);
+            }
         }
 
         private void DrawBoardStateDynamics(GameState state)
         {
-            // // Sheep
-            // foreach (var p in State.SheepPos)
-            //     Gizmos.DrawSphere(center: new Vector3(p.x, p.y), radius: 1);
+            if (State == null)
+                return;
+
+            // Update sheep positions.
+            int end = math.max(State.SheepPos.Length, sheepInstances.Count);
+            for (int i = 0; i < end; i++)
+            {
+                // Disable sheep if removed in simulation.
+                if (i >= State.SheepPos.Length)
+                {
+                    sheepInstances[i].gameObject.SetActive(false);
+                    continue;
+                }
+
+                sheepInstances[i].position = SimToWorld(State.SheepPos[i]);
+                RotateFromPreviousPosition(sheepInstances[i], ref previousPositions[i]);
+            }
+        }
+
+        private void RotateFromPreviousPosition(Transform transform, ref Vector3 prev)
+        {
+            const float turnSpeed = 720f;
+            Vector3 curr = transform.position;
+            Vector3 disp = curr - prev;
+            disp.y = 0f; // XZ only
+
+            if (disp.sqrMagnitude > 1e-6f) // avoid jitter
+            {
+                // Yaw toward direction of travel on XZ plane
+                float targetYaw = Mathf.Atan2(disp.x, disp.z) * Mathf.Rad2Deg;
+                float currentYaw = transform.eulerAngles.y;
+                float nextYaw = float.IsInfinity(turnSpeed)
+                    ? targetYaw
+                    : Mathf.MoveTowardsAngle(currentYaw, targetYaw, turnSpeed * Time.deltaTime);
+
+                transform.rotation = Quaternion.Euler(0f, nextYaw, 0f);
+            }
+
+            prev = curr;
         }
 
         /// <summary>
@@ -197,16 +249,6 @@ namespace SheepGame.Gameplay
         {
             var local = new Vector3(pos.x, 0, pos.y);
             return local;
-        }
-
-        void OnDrawGizmos()
-        {
-            if (State == null)
-                return;
-
-            // Sheep
-            foreach (var p in State.SheepPos)
-                Gizmos.DrawSphere(center: SimToWorld(p), radius: 0.2f);
         }
     }
 }
