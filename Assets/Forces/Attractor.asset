@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::SheepGame.Data.ForceType
   displayName: Attractor
   isAttractor: 1
-  strength: 1.2
+  strength: 0.5
   radius: 2
-  exponent: -2
+  exponent: -1
   countPerPlayer: 4

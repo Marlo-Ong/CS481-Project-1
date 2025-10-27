@@ -78,15 +78,20 @@ namespace SheepGame.Sim
                     var spec = state.ForceTypes[inst.ForceTypeIndex];
 
                     float2 c = inst.WorldPos;
-                    float2 rvec = c - p0;                    // attraction is + towards center
-                    float dist = math.length(rvec);
-                    if (dist < Epsilon) dist = Epsilon;
+                    float2 diff = c - p0;
+                    float distance = math.length(diff);
+                    if (distance < Epsilon)
+                        distance = Epsilon;
 
-                    if (dist <= spec.Radius)
+                    // if (distance <= spec.Radius)
                     {
-                        float2 dir = rvec / dist;
-                        float mag = spec.SignedStrength * math.pow(dist, spec.Exponent);
-                        F += dir * mag;
+                        float eff = math.sqrt(distance * distance + ForceSoftening * ForceSoftening);
+                        if (spec.IsAttractor && distance < ForceDeadZone)
+                            continue;
+
+                        float2 direction = diff / distance; // unit
+                        float magnitude = spec.SignedStrength * math.pow(eff, spec.Exponent);
+                        F += direction * magnitude;
                     }
                 }
 
@@ -112,6 +117,32 @@ namespace SheepGame.Sim
 
                 // Attempt move with one slide; capture on earliest pen overlap
                 float2 p1 = p0 + dispWanted;
+
+                if (NoOvershootToAttractors && math.lengthsq(dispWanted) > 1e-12f)
+                {
+                    float2 v = p1 - p0;
+                    float vv = math.dot(v, v);
+                    for (int f = 0; f < state.Forces.Count; f++)
+                    {
+                        var inst = state.Forces[f];
+                        var spec = state.ForceTypes[inst.ForceTypeIndex];
+                        if (!spec.IsAttractor) continue;
+
+                        float2 c = inst.WorldPos;
+                        // Will the segment cross the center line?
+                        float t = math.dot(c - p0, v) / vv;           // projection param onto [p0,p1]
+                        if (t < 0f || t > 1f) continue;               // not along this step
+                        float2 closest = p0 + t * v;
+                        // If we would pass the center, clamp to stop short by ForceDeadZone
+                        if (math.lengthsq(closest - c) < ForceDeadZone * ForceDeadZone)
+                        {
+                            float2 dirToC = math.normalizesafe(c - p0);
+                            float stopLen = math.max(0f, math.length(c - p0) - ForceDeadZone);
+                            p1 = p0 + dirToC * stopLen;
+                            break; // one clamp is enough
+                        }
+                    }
+                }
 
                 // Choose earliest event among pen overlap and obstacle/boundary collision
                 bool hitObstacle = state.Obstacles.FirstObstacleHit(p0, p1, out float tObs, out float2 nObs);
@@ -177,6 +208,7 @@ namespace SheepGame.Sim
                     newPos[i] = p1;
                 }
 
+                // Update maximum calculated displacement
                 float2 actualDisp = newPos[i] - p0;
                 float aLen = math.length(actualDisp);
                 if (aLen > maxDisp) maxDisp = aLen;

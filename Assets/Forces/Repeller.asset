@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2cadf05bf58d8417f91dc7cd401f63c9, type: 3}
   m_Name: Repeller
   m_EditorClassIdentifier: Assembly-CSharp::SheepGame.Data.ForceType
-  displayName: Attractor
+  displayName: Repeller
   isAttractor: 0
-  strength: 1
+  strength: 0.5
   radius: 2
-  exponent: -2
+  exponent: -1
   countPerPlayer: 4

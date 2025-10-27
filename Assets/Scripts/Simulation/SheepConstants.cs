@@ -8,9 +8,15 @@ namespace SheepGame.Sim
     public static class SheepConstants
     {
         // Core integration
-        public const float Dt = 0.1f;          // positional step scale
+        public const float Dt = 0.15f;          // positional step scale
         public const float Epsilon = 0.01f;    // small distance floor to avoid singularities
         public const float MaxStep = 0.5f;     // max displacement per tick (tiles)
+
+        // Force easing
+        public const float ForceSoftening = 0.30f;   // r0 in tiles; try 0.25–0.5
+        public const float ForceDeadZone = 0.20f;   // optional dead zone near centers
+        public const bool NoOvershootToAttractors = true; // clamp crossing the center
+
 
         // Sheep–sheep repulsion
         public const float SheepRepelStrength = 1.0f; // k_ss

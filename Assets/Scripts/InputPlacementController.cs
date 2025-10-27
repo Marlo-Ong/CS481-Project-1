@@ -186,6 +186,7 @@ namespace SheepGame.Gameplay
         {
             // Get XZ grid cell from XY simulation cell.
             var gridCell = new Vector3Int(cell.x, 0, cell.y);
+            return gridCell;
             return grid.CellToWorld(gridCell);
         }
 
@@ -195,7 +196,7 @@ namespace SheepGame.Gameplay
         private Vector3 SimToWorld(float2 pos)
         {
             var local = new Vector3(pos.x, 0, pos.y);
-            return grid.transform.TransformPoint(local);
+            return local;
         }
 
         void OnDrawGizmos()

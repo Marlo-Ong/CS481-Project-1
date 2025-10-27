@@ -3939,8 +3939,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 330585543}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.62793577, y: 1.4448683e-10, z: 1.8645245e-11, w: 0.77826524}
-  m_LocalPosition: {x: 4.0438914, y: 11.938816, z: -7.2}
+  m_LocalRotation: {x: 0.70710677, y: 7.6327826e-17, z: -1.7347233e-18, w: 0.7071068}
+  m_LocalPosition: {x: 5.4857655, y: 13.013334, z: 4.0050564}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -4375,9 +4375,9 @@ Transform:
   m_GameObject: {fileID: 355471828}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 26, y: 0, z: 1.5}
+  m_LocalPosition: {x: 26.15, y: 0, z: 19.2}
   m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
+  m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 308726260}
   - {fileID: 1967607308}
@@ -14216,7 +14216,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::SheepGame.Gameplay.AIAgentController
   controller: {fileID: 1464157930}
   depth: 2
-  useAlphaBeta: 0
+  useAlphaBeta: 1
   candidateRadius: 3
   topKPerType: 6
 --- !u!114 &1464157929
@@ -14255,10 +14255,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9aac238ce799142488d5aada7868bad7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SheepGame.Gameplay.GameController
-  levelData: {fileID: 11400000, guid: fce682ec00cb643dea0e8bc5143e14c4, type: 2}
+  levelData: {fileID: 11400000, guid: 721d49e2f0215ba45919badc43db8a15, type: 2}
   config: {fileID: 11400000, guid: ea8219a51c44a4f0f8c48c1068ae844d, type: 2}
   aiPlaysPlayer0: 0
-  aiPlaysPlayer1: 1
+  aiPlaysPlayer1: 0
 --- !u!4 &1464157931
 Transform:
   m_ObjectHideFlags: 0
@@ -17606,7 +17606,7 @@ Transform:
   m_GameObject: {fileID: 1701489895}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -18}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -17620,7 +17620,7 @@ Grid:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1701489895}
   m_Enabled: 1
-  m_CellSize: {x: 2, y: 2, z: 2}
+  m_CellSize: {x: 2, y: 1, z: 2}
   m_CellGap: {x: 0, y: 0, z: 0}
   m_CellLayout: 0
   m_CellSwizzle: 0

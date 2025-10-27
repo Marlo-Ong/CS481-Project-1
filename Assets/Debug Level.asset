@@ -1,0 +1,34 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 247889e19aef543d0967ffa8c9d909fa, type: 3}
+  m_Name: Debug Level
+  m_EditorClassIdentifier: Assembly-CSharp::SheepGame.Data.LevelData
+  N: 10
+  obstacleCells: []
+  pen0:
+    x: 4
+    y: 0
+    width: 3
+    height: 1
+  pen1:
+    x: 4
+    y: 9
+    width: 3
+    height: 1
+  forceTypes:
+  - {fileID: 11400000, guid: e7f7239af4c6f40ae8adb5769bff61e0, type: 2}
+  - {fileID: 11400000, guid: 9c664819989f2461181631dca4712a60, type: 2}
+  initialForces: []
+  explicitSheepPositions:
+  - {x: 5, y: 5}
+  randomSheepCount: 1
+  massRange: {x: 1, y: 1}
