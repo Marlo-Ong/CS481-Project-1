@@ -14255,10 +14255,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9aac238ce799142488d5aada7868bad7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SheepGame.Gameplay.GameController
-  levelData: {fileID: 11400000, guid: 721d49e2f0215ba45919badc43db8a15, type: 2}
+  levelData: {fileID: 11400000, guid: fce682ec00cb643dea0e8bc5143e14c4, type: 2}
   config: {fileID: 11400000, guid: ea8219a51c44a4f0f8c48c1068ae844d, type: 2}
   aiPlaysPlayer0: 0
-  aiPlaysPlayer1: 0
+  aiPlaysPlayer1: 1
 --- !u!4 &1464157931
 Transform:
   m_ObjectHideFlags: 0

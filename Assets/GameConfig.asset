@@ -15,5 +15,5 @@ MonoBehaviour:
   ticksPerTurn: 100
   earlySettle: 0
   useJobs: 0
-  gameSeed: sheep-001
+  gameSeed: 
   debugVisualAids: 1

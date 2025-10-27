@@ -50,14 +50,20 @@ namespace SheepGame.Sim
                 for (int f = 0; f < Forces.Length; f++)
                 {
                     var inst = Forces[f];
-                    float2 r = inst.Center - p0; // attract is toward center (signed strength handles direction)
-                    float d = math.length(r);
-                    if (d < Epsilon) d = Epsilon;
-                    if (d <= inst.Radius)
+                    float2 diff = inst.Center - p0;
+                    float distance = math.length(diff);
+                    if (distance < Epsilon)
+                        distance = Epsilon;
+
+                    // if (distance <= inst.Radius)
                     {
-                        float2 dir = r / d;
-                        float mag = inst.SignedStrength * math.pow(d, inst.Exponent);
-                        F += dir * mag;
+                        float eff = math.sqrt(distance * distance + ForceSoftening * ForceSoftening);
+                        if (distance < ForceDeadZone)
+                            continue;
+
+                        float2 direction = diff / distance; // unit
+                        float magnitude = inst.SignedStrength * math.pow(eff, inst.Exponent);
+                        F += direction * magnitude;
                     }
                 }
 
@@ -81,6 +87,29 @@ namespace SheepGame.Sim
                 if (dispLen > MaxStep) dispWanted *= (MaxStep / dispLen);
 
                 float2 p1 = p0 + dispWanted;
+
+                if (NoOvershootToAttractors && math.lengthsq(dispWanted) > 1e-12f)
+                {
+                    float2 v = p1 - p0;
+                    float vv = math.dot(v, v);
+                    for (int f = 0; f < Forces.Length; f++)
+                    {
+                        var inst = Forces[f];
+                        float2 c = inst.Center;
+                        // Will the segment cross the center line?
+                        float t = math.dot(c - p0, v) / vv;           // projection param onto [p0,p1]
+                        if (t < 0f || t > 1f) continue;               // not along this step
+                        float2 closest = p0 + t * v;
+                        // If we would pass the center, clamp to stop short by ForceDeadZone
+                        if (math.lengthsq(closest - c) < ForceDeadZone * ForceDeadZone)
+                        {
+                            float2 dirToC = math.normalizesafe(c - p0);
+                            float stopLen = math.max(0f, math.length(c - p0) - ForceDeadZone);
+                            p1 = p0 + dirToC * stopLen;
+                            break; // one clamp is enough
+                        }
+                    }
+                }
 
                 // Collision with obstacles/bounds via DDA
                 float tColl = float.PositiveInfinity;
@@ -270,7 +299,7 @@ namespace SheepGame.Sim
         /// <summary>
         /// Job-backed one-tick step. Returns max displacement magnitude. Compacts captures on main thread.
         /// </summary>
-        public static float StepOneTickJobs(GameState state, Unity.Collections.Allocator tmpAllocator = Unity.Collections.Allocator.TempJob)
+        public static float StepOneTickJobs(GameState state, Allocator tmpAllocator = Unity.Collections.Allocator.TempJob)
         {
 #if USE_JOBS
             int S = state.SheepPos.Length;
@@ -279,13 +308,13 @@ namespace SheepGame.Sim
             // Build native snapshots
             var obst = state.Obstacles.ToNative(tmpAllocator);
 
-            var pensMin = new NativeArray<Unity.Mathematics.float2>(2, tmpAllocator);
-            var pensMax = new NativeArray<Unity.Mathematics.float2>(2, tmpAllocator);
+            var pensMin = new NativeArray<float2>(2, tmpAllocator);
+            var pensMax = new NativeArray<float2>(2, tmpAllocator);
             pensMin[0] = state.Pens[0].Min; pensMax[0] = state.Pens[0].Max;
             pensMin[1] = state.Pens[1].Min; pensMax[1] = state.Pens[1].Max;
 
-            var inPos = new NativeArray<Unity.Mathematics.float2>(state.SheepPos, tmpAllocator);
-            var outPos = new NativeArray<Unity.Mathematics.float2>(S, tmpAllocator);
+            var inPos = new NativeArray<float2>(state.SheepPos, tmpAllocator);
+            var outPos = new NativeArray<float2>(S, tmpAllocator);
             var mass = new NativeArray<float>(state.SheepMass, tmpAllocator);
             var invMass = new NativeArray<float>(state.SheepInvMass, tmpAllocator);
 
