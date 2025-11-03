@@ -142,7 +142,7 @@ namespace SheepGame.Sim
                     return;
                 }
 
-                if (tColl <= 1f)
+                if (tColl < 1f)
                 {
                     float2 hitPoint = math.lerp(p0, p1, math.clamp(tColl, 0f, 1f));
                     float2 rem = (1f - math.clamp(tColl, 0f, 1f)) * dispWanted;

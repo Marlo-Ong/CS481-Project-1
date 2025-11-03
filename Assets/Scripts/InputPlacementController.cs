@@ -119,28 +119,28 @@ namespace SheepGame.Gameplay
             force.transform.position = SimToWorld(instance.Cell);
         }
 
-        void OnGUI()
-        {
-            if (!controller || controller.State == null) return;
+        //void OnGUI()
+        //{
+        //    if (!controller || controller.State == null) return;
 
-            var s = controller.State;
-            GUILayout.BeginArea(new Rect(10, 10, 280, 200), GUI.skin.box);
-            GUILayout.Label($"Current Player: {s.CurrentPlayer} {(controller.IsAITurn ? "(AI)" : "(Human)")}");
-            GUILayout.Label($"Scores: P0={s.Score[0]}  P1={s.Score[1]}");
-            GUILayout.Space(6);
-            GUILayout.Label("Palette (remaining per type):");
-            for (int i = 0; i < s.ForceTypes.Length; i++)
-            {
-                bool selected = (i == _selectedType);
-                var spec = s.ForceTypes[i];
-                string tag = spec.IsAttractor ? "Attractor" : "Repeller";
-                int p = s.CurrentPlayer; // show for current player
-                GUILayout.Label($"{(selected ? "➤ " : "  ")}[{i}] {tag}  rem={s.RemainingByPlayerType[p, i]}  (str={spec.Strength}, r={spec.Radius}, e={spec.Exponent})");
-            }
-            GUILayout.Space(6);
-            GUILayout.Label(_hasHover ? $"Hover: ({_hoverCell.x},{_hoverCell.y})" : "Hover: —");
-            GUILayout.EndArea();
-        }
+        //    var s = controller.State;
+        //    GUILayout.BeginArea(new Rect(10, 10, 280, 200), GUI.skin.box);
+        //    GUILayout.Label($"Current Player: {s.CurrentPlayer} {(controller.IsAITurn ? "(AI)" : "(Human)")}");
+        //    GUILayout.Label($"Scores: P0={s.Score[0]}  P1={s.Score[1]}");
+        //    GUILayout.Space(6);
+        //    GUILayout.Label("Palette (remaining per type):");
+        //    for (int i = 0; i < s.ForceTypes.Length; i++)
+        //    {
+        //        bool selected = (i == _selectedType);
+        //        var spec = s.ForceTypes[i];
+        //        string tag = spec.IsAttractor ? "Attractor" : "Repeller";
+        //        int p = s.CurrentPlayer; // show for current player
+        //        GUILayout.Label($"{(selected ? "➤ " : "  ")}[{i}] {tag}  rem={s.RemainingByPlayerType[p, i]}  (str={spec.Strength}, r={spec.Radius}, e={spec.Exponent})");
+        //    }
+        //    GUILayout.Space(6);
+        //    GUILayout.Label(_hasHover ? $"Hover: ({_hoverCell.x},{_hoverCell.y})" : "Hover: —");
+        //    GUILayout.EndArea();
+        //}
 
         private void DrawBoardStateStatics(GameState state)
         {
@@ -250,5 +250,11 @@ namespace SheepGame.Gameplay
             var local = new Vector3(pos.x, 0, pos.y);
             return local;
         }
+
+        public int GetSelectedType() => _selectedType;
+        public bool HasHover() => _hasHover;
+        public int2 GetHoverCell() => _hoverCell;
+
     }
+
 }

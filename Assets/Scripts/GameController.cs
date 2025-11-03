@@ -50,6 +50,8 @@ namespace SheepGame.Gameplay
         public event Action<ForceInstance> ForcePlaced;
         public event Action<GameState> StateSet;
 
+        private AdaptiveDifficulty _difficulty;
+
         public bool IsAITurn
         {
             get
@@ -93,6 +95,8 @@ namespace SheepGame.Gameplay
                 enabled = false;
                 return;
             }
+
+            _difficulty = FindFirstObjectByType<AdaptiveDifficulty>();
 
             // Build initial state from authored level + config seed
             State = levelData.ToGameState(config, out uint seed);
@@ -263,6 +267,7 @@ namespace SheepGame.Gameplay
 
             bool playerWon = playerScore > aiScore;
             ui?.OnShowResult(playerWon);
+            _difficulty?.Rebalance();
         }
     }
 }

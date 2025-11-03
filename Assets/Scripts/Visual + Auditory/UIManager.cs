@@ -4,6 +4,7 @@
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using System.Reflection;
 
 public class UIManager : MonoBehaviour
 {
@@ -38,12 +39,14 @@ public class UIManager : MonoBehaviour
             return;
         }
         _instance = this;
+
+        SceneManager.sceneLoaded += OnSceneLoaded;
     }
 
+    void OnDestroy() { SceneManager.sceneLoaded -= OnSceneLoaded; }
     void Start()
     {
         ApplySceneUI(SceneManager.GetActiveScene().name);
-        SceneManager.sceneLoaded += OnSceneLoaded;
     }
 
     void Update()
@@ -53,7 +56,30 @@ public class UIManager : MonoBehaviour
             TogglePause();
     }
 
-    private void OnSceneLoaded(Scene s, LoadSceneMode mode) => ApplySceneUI(s.name);
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        if (!PlayerPrefs.HasKey("AI_Depth")) return;
+
+        int depth = PlayerPrefs.GetInt("AI_Depth", 2);
+        int tpt = PlayerPrefs.GetInt("AI_TPT", 50);
+
+        // Apply depth back to AI (private field)
+        var ai = FindFirstObjectByType<SheepGame.Gameplay.AIAgentController>();
+        if (ai)
+        {
+            var f = typeof(SheepGame.Gameplay.AIAgentController)
+                .GetField("depth", BindingFlags.NonPublic | BindingFlags.Instance);
+            if (f != null) f.SetValue(ai, Mathf.Clamp(depth, 1, 4));
+        }
+
+        // Apply ticks/turn back to controller
+        var gc = FindFirstObjectByType<SheepGame.Gameplay.GameController>();
+        if (gc) gc.Config.ticksPerTurn = tpt;
+
+        // Clean up (optional): remove keys so next run starts fresh default if needed
+        // PlayerPrefs.DeleteKey("AI_Depth");
+        // PlayerPrefs.DeleteKey("AI_TPT");
+    }
 
     private void ApplySceneUI(string sceneName)
     {
@@ -171,11 +197,35 @@ public class UIManager : MonoBehaviour
         }
     }
 
-    public void OnPlayAgain()
+    public void OnRestartLevel()
     {
         SoundManager.Instance?.PlayClick();
         isPaused = false;
         HideAllPanels();
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+    }
+
+    public void OnPlayAgain()
+    {
+        // Read current depth from AIAgentController (private field) and ticks/turn from GameController
+        var ai = FindFirstObjectByType<SheepGame.Gameplay.AIAgentController>();
+        var gc = FindFirstObjectByType<SheepGame.Gameplay.GameController>();
+
+        int depth = 2;
+        if (ai)
+        {
+            var f = typeof(SheepGame.Gameplay.AIAgentController)
+                .GetField("depth", BindingFlags.NonPublic | BindingFlags.Instance);
+            if (f != null) depth = (int)f.GetValue(ai);
+        }
+        int tpt = gc ? gc.Config.ticksPerTurn : 50;
+
+        // Persist once
+        PlayerPrefs.SetInt("AI_Depth", depth);
+        PlayerPrefs.SetInt("AI_TPT", tpt);
+        PlayerPrefs.Save();
+
+        // Reload scene
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 

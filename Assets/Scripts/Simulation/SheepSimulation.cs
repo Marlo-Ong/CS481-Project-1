@@ -118,6 +118,13 @@ namespace SheepGame.Sim
                 // Attempt move with one slide; capture on earliest pen overlap
                 float2 p1 = p0 + dispWanted;
 
+                if(state.Obstacles.IsBlocked(new int2((int)math.floor(p0.x), (int)math.floor(p0.y))))
+                {
+                    var nudge = math.normalizesafe(dispWanted, new float2(1, 0)) * 0.05f;
+                    p0 += nudge;
+                    p1 += nudge;
+                }
+
                 if (NoOvershootToAttractors && math.lengthsq(dispWanted) > 1e-12f)
                 {
                     float2 v = p1 - p0;
@@ -172,7 +179,7 @@ namespace SheepGame.Sim
                     continue;
                 }
 
-                if (tColl <= 1f)
+                if (tColl < 1f)
                 {
                     // Slide once
                     float2 hitPoint = math.lerp(p0, p1, math.clamp(tColl, 0f, 1f));
