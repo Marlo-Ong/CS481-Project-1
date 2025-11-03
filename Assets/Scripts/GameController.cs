@@ -3,6 +3,7 @@
 
 using System;
 using System.Linq;
+using System.Collections.Generic;
 using UnityEngine;
 using Unity.Mathematics;
 using SheepGame.Sim;
@@ -34,6 +35,12 @@ namespace SheepGame.Gameplay
 
         private int _ticksTargetThisTurn;
         private int _settleRun;
+
+        //Checks if player has decided to move a force
+        public bool isForceMoving;
+
+        //The path a force will follow
+        public List<int2> movementPath;
 
         // For convenience from other scripts
         public int N => State?.N ?? 0;
@@ -205,6 +212,23 @@ namespace SheepGame.Gameplay
             TicksPerformedThisTurn = 0;
             _settleRun = 0;
             IsSimulating = true;
+        }
+
+        private void MoveForce(int2 curCell, int2 targetCell, int typeIndex)
+        {
+            List<int2> path = State.aStar.FindPath(curCell, targetCell);
+            ForceInstance force;
+            foreach(ForceInstance forces in State.Forces)
+            {
+                if(curCell.x == forces.Cell.x && curCell.y == forces.Cell.y)
+                {
+                    force = forces;
+                }
+            }
+            foreach(int2 cell in path)
+            {
+                
+            }
         }
 
         private bool IsTerminal()

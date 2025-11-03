@@ -13,6 +13,7 @@ namespace SheepGame.Sim
         // Grid + static world
         public int N;                           // grid size (tiles)
         public ObstacleGrid Obstacles;          // whole-tile blockers
+        public AStar aStar;
         public PenRegion[] Pens = new PenRegion[2]; // pen[0] belongs to player 0, pen[1] to player 1
 
         // Forces on the board (persist)
@@ -38,6 +39,7 @@ namespace SheepGame.Sim
             {
                 N = N,
                 Obstacles = new ObstacleGrid(Obstacles.N, Obstacles.ToArrayCopy()),
+                aStar = new AStar(Obstacles),
                 Pens = new PenRegion[] { Pens[0], Pens[1] },
                 Forces = new List<ForceInstance>(Forces),
                 ForceTypes = (ForceSpec[])ForceTypes.Clone(),
@@ -57,6 +59,7 @@ namespace SheepGame.Sim
             {
                 N = n,
                 Obstacles = obstacles,
+                aStar =  new AStar(obstacles),
                 Pens = new[] { pen0, pen1 },
                 ForceTypes = forceTypes,
                 RemainingByPlayerType = remainingByPlayerType
