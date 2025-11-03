@@ -4576,6 +4576,7 @@ MonoBehaviour:
   scoreTxt: {fileID: 1938144801}
   difficultyTxt: {fileID: 639685925}
   forcesTxt: {fileID: 1275147123}
+  hoverText: {fileID: 0}
   turnProgress: {fileID: 1841881622}
 --- !u!1 &905726489
 GameObject:
@@ -7718,13 +7719,13 @@ RectTransform:
   m_LocalScale: {x: 0, y: 0, z: 0}
   m_ConstrainProportionsScale: 0
   m_Children:
+  - {fileID: 1841881621}
   - {fileID: 73621021}
   - {fileID: 60616586}
   - {fileID: 453615119}
   - {fileID: 1287152514}
   - {fileID: 845920294}
   - {fileID: 1885777157}
-  - {fileID: 1841881621}
   - {fileID: 1384243365}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}

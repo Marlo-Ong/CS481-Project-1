@@ -4094,11 +4094,11 @@ RectTransform:
   m_LocalScale: {x: 0, y: 0, z: 0}
   m_ConstrainProportionsScale: 0
   m_Children:
+  - {fileID: 691129787}
   - {fileID: 711392217}
   - {fileID: 171337302}
   - {fileID: 602073491}
   - {fileID: 1221165820}
-  - {fileID: 691129787}
   - {fileID: 1569559844}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -11359,6 +11359,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 965955118}
+  - component: {fileID: 965955119}
   m_Layer: 0
   m_Name: FirstRowFences (2)
   m_TagString: Untagged
@@ -11387,6 +11388,27 @@ Transform:
   - {fileID: 2091818024}
   m_Father: {fileID: 355471829}
   m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
+--- !u!65 &965955119
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 965955117}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1, y: 1, z: 1}
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &971947285
 GameObject:
   m_ObjectHideFlags: 0
@@ -14365,6 +14387,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1362433785}
+  - component: {fileID: 1362433786}
   m_Layer: 0
   m_Name: FirstRowFences (1)
   m_TagString: Untagged
@@ -14393,6 +14416,27 @@ Transform:
   - {fileID: 1588493108}
   m_Father: {fileID: 355471829}
   m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
+--- !u!65 &1362433786
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1362433784}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1, y: 1, z: 1}
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &1371351069
 GameObject:
   m_ObjectHideFlags: 0
@@ -18388,6 +18432,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1654434615}
+  - component: {fileID: 1654434616}
   m_Layer: 0
   m_Name: FirstRowFences (3)
   m_TagString: Untagged
@@ -18416,6 +18461,27 @@ Transform:
   - {fileID: 506471298}
   m_Father: {fileID: 355471829}
   m_LocalEulerAnglesHint: {x: 0, y: 270, z: 0}
+--- !u!65 &1654434616
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1654434614}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1, y: 1, z: 1}
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &1654919205
 GameObject:
   m_ObjectHideFlags: 0
@@ -22196,6 +22262,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1967607308}
+  - component: {fileID: 1967607309}
   m_Layer: 0
   m_Name: FirstRowFences
   m_TagString: Untagged
@@ -22224,6 +22291,27 @@ Transform:
   - {fileID: 2139720742}
   m_Father: {fileID: 355471829}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &1967607309
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1967607307}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1, y: 1, z: 1}
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &1982436728
 GameObject:
   m_ObjectHideFlags: 0
