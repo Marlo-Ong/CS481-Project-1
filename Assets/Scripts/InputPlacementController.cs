@@ -200,7 +200,10 @@ namespace SheepGame.Gameplay
                 // Disable sheep if removed in simulation.
                 if (i >= State.SheepPos.Length)
                 {
+                    bool wasActive = sheepInstances[i].gameObject.activeInHierarchy;
                     sheepInstances[i].gameObject.SetActive(false);
+                    if (wasActive)
+                        SoundManager.Instance.PlayCapture();
                     continue;
                 }
 

@@ -138,9 +138,9 @@ public class UIManager : MonoBehaviour
         Show(creditsPanel, false);
         Show(levelsPanel, false);
 
-        if(SceneManager.GetActiveScene().name == startSceneName) 
-        { 
-            Show(menuPanel, true); 
+        if (SceneManager.GetActiveScene().name == startSceneName)
+        {
+            Show(menuPanel, true);
         }
         if (SceneManager.GetActiveScene().name == gameplaySceneName)
         {
@@ -195,6 +195,7 @@ public class UIManager : MonoBehaviour
             resultText.text = didWin ? "You Win!" : "You Lose!";
             resultText.color = didWin ? new Color(0.2f, 0.9f, 0.3f) : new Color(0.9f, 0.3f, 0.2f);
         }
+        SoundManager.Instance.PlayResult(didWin);
     }
 
     public void OnRestartLevel()

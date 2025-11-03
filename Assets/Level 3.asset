@@ -10,34 +10,36 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 247889e19aef543d0967ffa8c9d909fa, type: 3}
-  m_Name: Level 2
+  m_Name: Level 3
   m_EditorClassIdentifier: Assembly-CSharp::SheepGame.Data.LevelData
   N: 10
-  obstacleCells: []
+  obstacleCells:
+  - {x: 4, y: 2}
+  - {x: 4, y: 3}
+  - {x: 4, y: 4}
+  - {x: 4, y: 5}
+  - {x: 4, y: 6}
+  - {x: 4, y: 7}
+  - {x: 5, y: 2}
+  - {x: 5, y: 3}
+  - {x: 5, y: 4}
+  - {x: 5, y: 5}
+  - {x: 5, y: 6}
+  - {x: 5, y: 7}
   pen0:
-    x: 4
-    y: 0
-    width: 3
-    height: 1
+    x: 0
+    y: 4
+    width: 1
+    height: 4
   pen1:
-    x: 4
-    y: 9
-    width: 3
-    height: 1
+    x: 9
+    y: 4
+    width: 1
+    height: 4
   forceTypes:
   - {fileID: 11400000, guid: e7f7239af4c6f40ae8adb5769bff61e0, type: 2}
   - {fileID: 11400000, guid: 9c664819989f2461181631dca4712a60, type: 2}
   initialForces: []
-  explicitSheepPositions:
-  - {x: 0, y: 5}
-  - {x: 1, y: 5}
-  - {x: 2, y: 5}
-  - {x: 3, y: 5}
-  - {x: 4, y: 5}
-  - {x: 5, y: 5}
-  - {x: 6, y: 5}
-  - {x: 7, y: 5}
-  - {x: 8, y: 5}
-  - {x: 9, y: 5}
+  explicitSheepPositions: []
   randomSheepCount: 8
   massRange: {x: 1, y: 1}

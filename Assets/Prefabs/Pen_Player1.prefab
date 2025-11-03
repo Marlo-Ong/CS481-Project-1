@@ -10,8 +10,12 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 2511882140321850065, guid: 81622b6df99c641449b1d71e3ddce3bd, type: 3}
       propertyPath: m_Name
-      value: Pen
+      value: Pen_Player1
       objectReference: {fileID: 0}
+    - target: {fileID: 3128941373425196786, guid: 81622b6df99c641449b1d71e3ddce3bd, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: a2aa9aeea0a1c4b43924971f1a965d93, type: 2}
     - target: {fileID: 7492715427318839687, guid: 81622b6df99c641449b1d71e3ddce3bd, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0

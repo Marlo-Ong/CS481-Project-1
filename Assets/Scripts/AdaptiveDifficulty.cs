@@ -25,7 +25,8 @@ public sealed class AdaptiveDifficulty : MonoBehaviour
         f?.SetValue(ai, Mathf.Clamp(targetDepth, minDepth, maxDepth));
 
         // also adjust ticks per turn for stronger reactions
-        controller.Config.ticksPerTurn = Mathf.Clamp(Mathf.RoundToInt(40 + (1f - wr) * 40), 30, 80);
+        int prev = controller.Config.ticksPerTurn;
+        controller.Config.ticksPerTurn = Mathf.Clamp(Mathf.RoundToInt(prev + (1f - wr) * 40), 100, 200);
     }
 
     private int aiDepthFromWinRate(float wr)

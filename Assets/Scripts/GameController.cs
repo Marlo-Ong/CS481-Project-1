@@ -99,7 +99,7 @@ namespace SheepGame.Gameplay
             _difficulty = FindFirstObjectByType<AdaptiveDifficulty>();
 
             // Build initial state from authored level + config seed
-            State = levelData.ToGameState(config, out uint seed);
+            State = GameSettings.Level.ToGameState(config, out uint seed);
             StateSet?.Invoke(State);
 
             // Start of first turn: not simulating yet, waiting for placement.
@@ -222,16 +222,16 @@ namespace SheepGame.Gameplay
         {
             List<int2> path = State.aStar.FindPath(curCell, targetCell);
             ForceInstance force;
-            foreach(ForceInstance forces in State.Forces)
+            foreach (ForceInstance forces in State.Forces)
             {
-                if(curCell.x == forces.Cell.x && curCell.y == forces.Cell.y)
+                if (curCell.x == forces.Cell.x && curCell.y == forces.Cell.y)
                 {
                     force = forces;
                 }
             }
-            foreach(int2 cell in path)
+            foreach (int2 cell in path)
             {
-                
+
             }
         }
 

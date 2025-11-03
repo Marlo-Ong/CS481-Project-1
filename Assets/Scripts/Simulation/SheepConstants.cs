@@ -14,8 +14,8 @@ namespace SheepGame.Sim
 
         // Force easing
         public const float ForceSoftening = 0.30f;   // r0 in tiles; try 0.25–0.5
-        public const float ForceDeadZone = 0.20f;   // optional dead zone near centers
-        public const bool NoOvershootToAttractors = true; // clamp crossing the center
+        public const float ForceDeadZone = 1.00f;   // optional dead zone near centers
+        public const bool NoOvershootToAttractors = false; // clamp crossing the center
 
 
         // Sheep–sheep repulsion
