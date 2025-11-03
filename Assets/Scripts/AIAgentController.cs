@@ -13,9 +13,6 @@ namespace SheepGame.Gameplay
         [SerializeField] private GameController controller;
 
         [Header("AI Settings")]
-        [Tooltip("Depth for minimax (you requested 2).")]
-        [SerializeField] private int depth = 2;
-
         [Tooltip("Use alpha-beta pruning for a small speedup.")]
         [SerializeField] private bool useAlphaBeta = false;
 
@@ -27,6 +24,7 @@ namespace SheepGame.Gameplay
 
         private MinimaxAI<GameState, ForcePlacement> _ai;
         private SheepGameAdapter _adapter;
+        private int depth;
 
         void Reset()
         {
@@ -42,6 +40,7 @@ namespace SheepGame.Gameplay
                 return;
             }
 
+            depth = AdaptiveDifficulty.TargetDepth;
             _adapter = new SheepGameAdapter(controller.Config, candidateRadius, topKPerType);
             _ai = new MinimaxAI<GameState, ForcePlacement>(_adapter);
         }

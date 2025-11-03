@@ -13,14 +13,12 @@ public class GameHUD : MonoBehaviour
     [Header("Refs")]
     [SerializeField] GameController controller;
     [SerializeField] InputPlacementController inputCtrl;
-    [SerializeField] AdaptiveDifficulty adaptive;   // optional reference
 
     [Header("UI")]
     [SerializeField] TMP_Text currentPlayerTxt;
     [SerializeField] TMP_Text scoreTxt;
     [SerializeField] TMP_Text difficultyTxt;
     [SerializeField] TMP_Text forcesTxt;
-    [SerializeField] TMP_Text hoverText;
     [SerializeField] Slider turnProgress;
 
     int lastSelectedType = 0;
@@ -29,7 +27,6 @@ public class GameHUD : MonoBehaviour
     {
         if (!controller) controller = FindFirstObjectByType<GameController>();
         if (!inputCtrl) inputCtrl = FindFirstObjectByType<InputPlacementController>();
-        if (!adaptive) adaptive = FindFirstObjectByType<AdaptiveDifficulty>();
 
         if (controller) controller.StateSet += _ => Refresh(full: true);
         Refresh(full: true);
@@ -55,19 +52,15 @@ public class GameHUD : MonoBehaviour
         {
             turnProgress.gameObject.SetActive(controller.IsSimulating);
             turnProgress.minValue = 0;
-            turnProgress.maxValue = Mathf.Max(1, controller.Config.ticksPerTurn);
+            turnProgress.maxValue = Mathf.Max(1, AdaptiveDifficulty.TicksPerTurn);
             turnProgress.value = controller.TicksPerformedThisTurn;
         }
 
         // --- difficulty (only if component present)
         if (difficultyTxt)
         {
-            if (adaptive)
-            {
-                difficultyTxt.gameObject.SetActive(true);
-                difficultyTxt.text = $"AI Depth {adaptive.GetCurrentDepth()} • {controller.Config.ticksPerTurn} tpt";
-            }
-            else difficultyTxt.gameObject.SetActive(false);
+            difficultyTxt.gameObject.SetActive(true);
+            difficultyTxt.text = $"AI Depth {AdaptiveDifficulty.TargetDepth} • {AdaptiveDifficulty.TicksPerTurn} tpt";
         }
 
         // --- Forces
@@ -94,19 +87,6 @@ public class GameHUD : MonoBehaviour
             }
 
             forcesTxt.text = sb.ToString();
-        }
-
-        // --- Hover cell
-        if (hoverText)
-        {
-            int2 cell = default;
-            bool hasHover = false;
-            if (inputCtrl)
-            {
-                cell = inputCtrl.GetHoverCell();
-                hasHover = inputCtrl.HasHover();
-            }
-            hoverText.text = hasHover ? $"Hover: ({cell.x},{cell.y})" : "Hover: —";
         }
     }
 

@@ -106,7 +106,7 @@ namespace SheepGame.Gameplay
             IsSimulating = false;
             TicksPerformedThisTurn = 0;
             _settleRun = 0;
-            _ticksTargetThisTurn = config.ticksPerTurn;
+            _ticksTargetThisTurn = AdaptiveDifficulty.TicksPerTurn;
         }
 
         void FixedUpdate()
@@ -212,7 +212,7 @@ namespace SheepGame.Gameplay
             State.CurrentPlayer = 1 - State.CurrentPlayer;
 
             // Start animated simulation
-            _ticksTargetThisTurn = Mathf.Max(1, config.ticksPerTurn);
+            _ticksTargetThisTurn = Mathf.Max(1, AdaptiveDifficulty.TicksPerTurn);
             TicksPerformedThisTurn = 0;
             _settleRun = 0;
             IsSimulating = true;
@@ -267,7 +267,7 @@ namespace SheepGame.Gameplay
 
             bool playerWon = playerScore > aiScore;
             ui?.OnShowResult(playerWon);
-            _difficulty?.Rebalance();
+            _difficulty?.Rebalance(playerWon, config.ticksPerTurn);
         }
     }
 }

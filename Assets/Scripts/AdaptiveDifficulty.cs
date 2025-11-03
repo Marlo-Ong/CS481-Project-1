@@ -6,27 +6,41 @@ using SheepGame.Gameplay;
 
 public sealed class AdaptiveDifficulty : MonoBehaviour
 {
-    [SerializeField] private GameController controller;
-    [SerializeField] private AIAgentController ai;
+    private static AdaptiveDifficulty Instance;
+
     [SerializeField] private int minDepth = 1;
     [SerializeField] private int maxDepth = 3;
+    public static int TargetDepth { get; private set; }
+    public static int TicksPerTurn { get; private set; }
+    private int playerGamesWon;
+    private int gamesPlayed;
+
+    void Awake()
+    {
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+
+        Instance = this;
+        DontDestroyOnLoad(gameObject);
+
+        Rebalance(playerWon: false, ticksPerTurn: 100);
+    }
 
     // call this after each game ends, or periodically after turns
-    public void Rebalance()
+    public void Rebalance(bool playerWon, int ticksPerTurn)
     {
-        if (!controller || controller.State == null || !ai) return;
-        int p0 = controller.State.Score[0];
-        int p1 = controller.State.Score[1];
-        float wr = (p0 + p1) > 0 ? (float)p0 / (p0 + p1) : 0.5f;
+        playerGamesWon += playerWon ? 1 : 0;
+        gamesPlayed++;
+        float wr = (float)playerGamesWon / gamesPlayed;
 
         // raise depth if player is winning too often, lower if struggling
-        int targetDepth = aiDepthFromWinRate(wr);
-        var f = typeof(AIAgentController).GetField("depth", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-        f?.SetValue(ai, Mathf.Clamp(targetDepth, minDepth, maxDepth));
+        TargetDepth = aiDepthFromWinRate(wr);
 
         // also adjust ticks per turn for stronger reactions
-        int prev = controller.Config.ticksPerTurn;
-        controller.Config.ticksPerTurn = Mathf.Clamp(Mathf.RoundToInt(prev + (1f - wr) * 40), 100, 200);
+        TicksPerTurn = Mathf.Clamp(Mathf.RoundToInt(ticksPerTurn + (1f - wr) * 40), 100, 200);
     }
 
     private int aiDepthFromWinRate(float wr)
@@ -35,21 +49,4 @@ public sealed class AdaptiveDifficulty : MonoBehaviour
         if (wr < 0.35f) return 1;
         return 2;
     }
-
-    public int GetCurrentDepth()
-    {
-        if (!ai) ai = FindFirstObjectByType<AIAgentController>();
-        if (!ai) return 0;
-
-        var f = typeof(AIAgentController)
-                .GetField("depth",
-                    System.Reflection.BindingFlags.NonPublic |
-                    System.Reflection.BindingFlags.Instance);
-
-        if (f == null) return 0;
-
-        int v = (int)f.GetValue(ai);
-        return Mathf.Clamp(v, minDepth, maxDepth);
-    }
-
 }
