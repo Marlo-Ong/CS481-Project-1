@@ -38,7 +38,7 @@ namespace SheepGame.Gameplay
         {
             if (controller == null)
             {
-                Debug.LogError("GameControlelr not assigned in InputPlacementController.");
+                Debug.LogError("GameController not assigned in InputPlacementController.");
                 return;
             }
 
@@ -73,7 +73,7 @@ namespace SheepGame.Gameplay
             _hasHover = TryGetMouseCell(out _hoverCell);
             if (_hasHover)
             {
-                bool legal = controller.IsPlacementLegal(controller.State, controller.State.CurrentPlayer, _hoverCell, _selectedType);
+                //bool legal = controller.IsPlacementLegal(controller.State, controller.State.CurrentPlayer, _hoverCell, _selectedType);
                 var cellPos = grid.CellToWorld(new Vector3Int(_hoverCell.x, 0, _hoverCell.y));
                 hoverTile.transform.position = cellPos;
             }

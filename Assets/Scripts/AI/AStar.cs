@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using Unity.Mathematics;
 using SheepGame.Sim;
+using UnityEngine;
 
 
 class Node
@@ -18,26 +19,44 @@ class Node
         gCost = 0;
     }
 
-    public bool Equals(Node other)
+    public override bool Equals(System.Object n)
     {
-        return this.coordinate.x == other.coordinate.x && this.coordinate.y == other.coordinate.y;
+        if (n == null)
+        {
+            return false;
+        }
+
+        Node temp = (Node)n;
+        return temp.coordinate.x == this.coordinate.x && temp.coordinate.y == this.coordinate.y;
+    }
+
+    public override int GetHashCode()
+    {
+        return System.HashCode.Combine(coordinate.x, coordinate.y);
     }
 }
 public class AStar
 {
     private ObstacleGrid obstacles;
     private List<Node> openSet;
+    private List<Node> closedList;
     private HashSet<Node> closedSet;
 
     public AStar(ObstacleGrid og)
     {
         obstacles = og;
+        openSet = new List<Node>();
+        closedList = new List<Node>();
+        closedSet = new HashSet<Node>();
     }
 
     public List<int2> FindPath(int2 startPos, int2 targetPos)
     {
-        if (obstacles.InBounds(startPos))
+        if (!obstacles.InBounds(startPos))
+        {
+            Debug.Log("return new list");
             return new List<int2>();
+        }
 
         this.openSet.Clear();
         this.closedSet.Clear();
@@ -51,22 +70,29 @@ public class AStar
         {
             // Get open node with lowest f cost
             int2 current = GetLowestFCostNode(this.openSet);
-            Node curNode = new Node(current);
+            Node curNode = GetCurNode(new Node(current), true);
 
-            // Close node
-            this.openSet.Remove(curNode);
-            this.closedSet.Add(curNode);
+            //Closing node and checking that it gets removed
+            if (!this.openSet.Remove(curNode))
+            {
+                Debug.Log("Doesnt remove anything");
+            }
+            if(this.closedSet.Add(curNode))
+            {
+                closedList.Add(curNode);
+            }
 
             // Check if target found
-            if (curNode == target)
+            if (curNode.Equals(target))
                 break;
 
             // Evaluate non-closed, non-obstacle neighbors
             foreach (Node neighbor in this.GetNeighbors(curNode))
             {
-                if (neighbor == null || !obstacles.IsBlocked(neighbor.coordinate) || this.closedSet.Contains(neighbor))
+                if (neighbor == null || obstacles.IsBlocked(neighbor.coordinate) || this.closedSet.Contains(neighbor))
+                {
                     continue;
-
+                }
                 // Check if this node needs to be added/updated (unexplored node, or found lower g-cost)
                 int newNeighborGCost = curNode.gCost + this.GetDistance(curNode, neighbor);
                 if (newNeighborGCost < neighbor.gCost || !this.openSet.Contains(neighbor))
@@ -78,7 +104,9 @@ public class AStar
 
                     // Open node
                     if (!this.openSet.Contains(neighbor))
+                    {
                         this.openSet.Add(neighbor);
+                    }
                 }
             }
         }
@@ -89,7 +117,11 @@ public class AStar
     private List<int2> RetracePath(Node start, Node end)
     {
         List<int2> path = new();
-        Node current = end;
+        Node current = GetCurNode(end, false);
+        if(current == null)
+        {
+            Debug.Log("End node doesn't get into list");
+        }
 
         while (current != null && current != start)
         {
@@ -128,12 +160,47 @@ public class AStar
                 if (i == 0 && j == 0)
                     continue;
 
-                Node neighbor = new Node(new int2(newX, newY));
+                Node neighbor = GetCurNode(new Node(new int2(newX, newY)), false);
+                if (neighbor == null)
+                {
+                    neighbor = GetCurNode(new Node(new int2(newX, newY)), true);
+                }
+                if(neighbor == null)
+                {
+                    neighbor = new Node(new int2(newX, newY));
+                }
                 if (obstacles.InBounds(new int2(newX, newY)))
+                {
                     neighbors.Add(neighbor);
+                }
             }
         }
         return neighbors;
+    }
+
+    Node GetCurNode(Node cur, bool open)
+    {
+        if (open)
+        {
+            foreach (Node n in openSet)
+            {
+                if (n.Equals(cur))
+                {
+                    return n;
+                }
+            }
+        }
+        else
+        {
+            foreach (Node n in closedList)
+            {
+                if(n.Equals(cur))
+                {
+                    return n;
+                }
+            }
+        }
+        return null;
     }
 
     private int2 GetLowestFCostNode(List<Node> set)

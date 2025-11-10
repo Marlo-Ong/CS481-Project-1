@@ -38,9 +38,12 @@ namespace SheepGame.Gameplay
 
         //Checks if player has decided to move a force
         public bool isForceMoving;
+        public bool pathCreated;
 
         //The path a force will follow
         public List<int2> movementPath;
+        public int2 curForceLocation;
+        public int curTypeIndex;
 
         // For convenience from other scripts
         public int N => State?.N ?? 0;
@@ -104,6 +107,8 @@ namespace SheepGame.Gameplay
 
             // Start of first turn: not simulating yet, waiting for placement.
             IsSimulating = false;
+            isForceMoving = false;
+            pathCreated = false;
             TicksPerformedThisTurn = 0;
             _settleRun = 0;
             _ticksTargetThisTurn = AdaptiveDifficulty.TicksPerTurn;
@@ -150,6 +155,10 @@ namespace SheepGame.Gameplay
                     // If next player is AI, AIAgentController will notice and act.
                 }
             }
+            if(isForceMoving && pathCreated)
+            {
+                //MoveForce(curForceLocation, movementPath, curTypeIndex);
+            }
         }
 
         // ============ Public API for input/AI ============
@@ -190,7 +199,32 @@ namespace SheepGame.Gameplay
             for (int i = 0; i < s.Forces.Count; i++)
             {
                 var c = s.Forces[i].Cell;
+                if (IsHumanTurn)
+                {
+                    if (isForceMoving)
+                    {
+                        if (c.x == cell.x && c.y == cell.y)
+                        {
+                            isForceMoving = false;
+                        }
+                    }
+                    else
+                    {
+                        if (c.x == cell.x && c.y == cell.y)
+                        {
+                            isForceMoving = true;
+                            curForceLocation = cell;
+                            curTypeIndex = typeIndex;
+                        }
+                    }
+                }
                 if (c.x == cell.x && c.y == cell.y) return false;
+            }
+            
+            if(isForceMoving)
+            {
+                GeneratePath(curForceLocation, cell, curTypeIndex);
+                return false;
             }
             // Pens are allowed.
             return true;
@@ -218,9 +252,9 @@ namespace SheepGame.Gameplay
             IsSimulating = true;
         }
 
-        private void MoveForce(int2 curCell, int2 targetCell, int typeIndex)
+        private void GeneratePath(int2 curCell, int2 targetCell, int typeIndex)
         {
-            List<int2> path = State.aStar.FindPath(curCell, targetCell);
+            movementPath = State.aStar.FindPath(curCell, targetCell);
             ForceInstance force;
             foreach (ForceInstance forces in State.Forces)
             {
@@ -229,9 +263,17 @@ namespace SheepGame.Gameplay
                     force = forces;
                 }
             }
-            foreach (int2 cell in path)
-            {
+        }
 
+        private void MoveForce()
+        {
+            ForceInstance force;
+            foreach(ForceInstance f in State.Forces)
+            {
+                if(curForceLocation.x == f.Cell.x && curForceLocation.y == f.Cell.y && f.ForceTypeIndex == curTypeIndex)
+                {
+                    force = f;
+                }
             }
         }
 
