@@ -51,6 +51,7 @@ namespace SheepGame.Gameplay
 
         // Events
         public event Action<ForceInstance> ForcePlaced;
+        public event Action<ForceInstance> ForceRemoved;
         public event Action<GameState> StateSet;
 
         private AdaptiveDifficulty _difficulty;
@@ -264,13 +265,16 @@ namespace SheepGame.Gameplay
             // Place force for current player
             var force = new ForceInstance(cell, typeIndex, State.CurrentPlayer, State.RoundIndex);
             State.Forces.Add(force);
-            State.RemainingByPlayerType[State.CurrentPlayer, typeIndex] -= 1;
+            if (!isForceMoving)
+            {
+                State.RemainingByPlayerType[State.CurrentPlayer, typeIndex] -= 1;
+            }
 
             SoundManager.Instance?.PlayPlaceForce();
             ForcePlaced?.Invoke(force);
 
             // 2) Flip once for normal play — but NOT during tutorial lock
-            if (!tutorialLockToHuman)
+            if (!tutorialLockToHuman && !isForceMoving)
                 State.CurrentPlayer = 1 - State.CurrentPlayer;
 
             // 3) Start the sim for this turn
@@ -293,16 +297,37 @@ namespace SheepGame.Gameplay
             }
         }
 
-        private void MoveForce()
+        public void MoveForce()
         {
-            ForceInstance force;
-            foreach(ForceInstance f in State.Forces)
+            if(IsSimulating)
             {
-                if(curForceLocation.x == f.Cell.x && curForceLocation.y == f.Cell.y && f.ForceTypeIndex == curTypeIndex)
+                return;
+            }
+            int forceNum = 0;
+            ForceInstance force = new ForceInstance();
+            foreach (ForceInstance f in State.Forces)
+            {
+                if (curForceLocation.x == f.Cell.x && curForceLocation.y == f.Cell.y && f.ForceTypeIndex == curTypeIndex)
                 {
                     force = f;
                 }
+                else
+                {
+                    forceNum++;
+                }
             }
+            State.Forces.RemoveAt(forceNum);
+            ForceRemoved?.Invoke(force);
+            int2 tempCell = movementPath[0];
+            curForceLocation = tempCell;
+            movementPath.RemoveAt(0);
+            if(movementPath.Count <= 0)
+            {
+                isForceMoving = false;
+                pathCreated = false;
+            }
+            PlaceForceAndBeginSim(tempCell, curTypeIndex);
+            
         }
 
         private bool IsTerminal()

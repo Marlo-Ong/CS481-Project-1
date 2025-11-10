@@ -25,6 +25,7 @@ namespace SheepGame.Gameplay
         [SerializeField] private GameObject forceRepelPrefab;
         [SerializeField] private GameObject obstaclePrefab;
         [SerializeField] private GameObject sheepPrefab;
+        private List<GameObject> allForces;
 
         private GameState State => controller.State;
 
@@ -48,6 +49,8 @@ namespace SheepGame.Gameplay
                 DrawBoardStateStatics(controller.State);
 
             controller.ForcePlaced += OnForcePlaced;
+            controller.ForceRemoved += OnForceRemoved;
+            allForces = new List<GameObject>();
         }
 
         private void OnStateSet(GameState state)
@@ -76,6 +79,11 @@ namespace SheepGame.Gameplay
 
             // Early out if not human's turn or simulating
             if (!controller.IsHumanTurn || controller.IsSimulating) return;
+
+            if (controller.movementPath.Count > 0 && controller.isForceMoving)
+            {
+                controller.MoveForce();
+            }
 
             // Click to place
             if (_hasHover && Input.GetMouseButtonDown(0))
@@ -112,6 +120,22 @@ namespace SheepGame.Gameplay
             bool attracts = State.ForceTypes[instance.ForceTypeIndex].IsAttractor;
             var force = Instantiate(attracts ? forceAttractPrefab : forceRepelPrefab);
             force.transform.position = SimToWorld(instance.Cell);
+            allForces.Add(force);
+        }
+
+        private void OnForceRemoved(ForceInstance instance)
+        {
+            int index = 0;
+            foreach(GameObject g in allForces)
+            {
+                if (g.transform.position == SimToWorld(instance.Cell))
+                {
+                    Destroy(g);
+                    allForces.RemoveAt(index);
+                    return;
+                }
+                index++;
+            }
         }
 
         private void DrawBoardStateStatics(GameState state)
