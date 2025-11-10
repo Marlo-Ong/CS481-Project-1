@@ -75,7 +75,7 @@ public class GameHUD : MonoBehaviour
         if (currentPlayerTxt)
         {
             string who = isPlayersTurn ? "(You)" : "";
-            currentPlayerTxt.text = $"<b>Player {humanPlayerIndex} {who}</b>";
+            currentPlayerTxt.text = $"<b>Player {who}</b>";
         }
 
         if (playerScoreTxt)
@@ -119,7 +119,7 @@ public class GameHUD : MonoBehaviour
         if (aiHeaderTxt)
         {
             string tag = isAITurn ? "(Thinking…)" : "";
-            aiHeaderTxt.text = $"<b>Player {aiPlayerIndex} (AI) {tag} </b>";
+            aiHeaderTxt.text = $"<b>AI {tag} </b>";
         }
 
         if (aiScoreTxt)
