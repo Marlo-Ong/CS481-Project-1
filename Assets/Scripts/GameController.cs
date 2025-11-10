@@ -157,6 +157,7 @@ namespace SheepGame.Gameplay
                 {
                     // End of simulation phase for this turn
                     IsSimulating = false;
+                    State.RoundIndex++;
                     TicksPerformedThisTurn = 0;
                     _settleRun = 0;
 
@@ -260,8 +261,8 @@ namespace SheepGame.Gameplay
 
         private void PlaceForceAndBeginSim(int2 cell, int typeIndex)
         {
-            // 1) Place force for the CURRENT player (do NOT flip before placing)
-            var force = new ForceInstance(cell, typeIndex, State.CurrentPlayer);
+            // Place force for current player
+            var force = new ForceInstance(cell, typeIndex, State.CurrentPlayer, State.RoundIndex);
             State.Forces.Add(force);
             State.RemainingByPlayerType[State.CurrentPlayer, typeIndex] -= 1;
 

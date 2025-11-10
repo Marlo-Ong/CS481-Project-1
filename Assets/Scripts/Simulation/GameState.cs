@@ -25,12 +25,14 @@ namespace SheepGame.Sim
 
         // Sheep
         public float2[] SheepPos = Array.Empty<float2>();
+        public float2[] SheepVel = Array.Empty<float2>();
         public float[] SheepMass = Array.Empty<float>();
         public float[] SheepInvMass = Array.Empty<float>();
 
         // Scoring and turn
         public int[] Score = new int[2];
         public int CurrentPlayer; // 0 or 1
+        public int RoundIndex;
 
         // --- Construction helpers ---
         public GameState DeepCopy()
@@ -45,6 +47,7 @@ namespace SheepGame.Sim
                 ForceTypes = (ForceSpec[])ForceTypes.Clone(),
                 RemainingByPlayerType = (int[,])RemainingByPlayerType.Clone(),
                 SheepPos = (float2[])SheepPos.Clone(),
+                SheepVel = (float2[])SheepVel.Clone(),
                 SheepMass = (float[])SheepMass.Clone(),
                 SheepInvMass = (float[])SheepInvMass.Clone(),
                 Score = (int[])Score.Clone(),
@@ -59,7 +62,7 @@ namespace SheepGame.Sim
             {
                 N = n,
                 Obstacles = obstacles,
-                aStar =  new AStar(obstacles),
+                aStar = new AStar(obstacles),
                 Pens = new[] { pen0, pen1 },
                 ForceTypes = forceTypes,
                 RemainingByPlayerType = remainingByPlayerType
@@ -93,12 +96,14 @@ namespace SheepGame.Sim
         public int2 Cell;           // grid cell
         public int ForceTypeIndex;  // index into GameState.ForceTypes
         public int OwnerPlayer;     // optional bookkeeping
+        public int RoundPlaced;
 
-        public ForceInstance(int2 cell, int forceTypeIndex, int ownerPlayer)
+        public ForceInstance(int2 cell, int forceTypeIndex, int ownerPlayer, int roundPlaced)
         {
             Cell = cell;
             ForceTypeIndex = forceTypeIndex;
             OwnerPlayer = ownerPlayer;
+            RoundPlaced = roundPlaced;
         }
 
         public float2 WorldPos => SheepConstants.CellCenter(Cell);

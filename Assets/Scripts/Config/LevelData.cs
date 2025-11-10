@@ -97,7 +97,7 @@ namespace SheepGame.Data
                 if (p0.ContainsPoint(wpos) || p1.ContainsPoint(wpos)) continue;
 
                 int typeIdx = Mathf.Clamp(f.forceTypeIndex, 0, specs.Length - 1);
-                state.Forces.Add(new ForceInstance(new int2(f.cell.x, f.cell.y), typeIdx, Mathf.Clamp(f.ownerPlayer, 0, 1)));
+                state.Forces.Add(new ForceInstance(new int2(f.cell.x, f.cell.y), typeIdx, Mathf.Clamp(f.ownerPlayer, 0, 1), state.RoundIndex));
             }
 
             // 8) Sheep positions
@@ -114,6 +114,7 @@ namespace SheepGame.Data
             }
 
             state.SheepPos = sheepPos;
+            state.SheepVel = new float2[sheepPos.Length];
 
             // 9) Sheep masses
             state.SheepMass = new float[sheepPos.Length];

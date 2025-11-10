@@ -81,7 +81,7 @@ namespace SheepGame.AI
                 { nextState = s; return; }
             }
 
-            s.Forces.Add(new ForceInstance(cell, move.ForceTypeIndex, s.CurrentPlayer));
+            s.Forces.Add(new ForceInstance(cell, move.ForceTypeIndex, s.CurrentPlayer, state.RoundIndex));
             s.RemainingByPlayerType[s.CurrentPlayer, move.ForceTypeIndex] -= 1;
 
             // Advance turn before sim so capture scoring is attributed immediately
@@ -93,6 +93,7 @@ namespace SheepGame.AI
             else
                 SheepSimulation.StepXTicks(s, _cfg.ticksPerTurn, _cfg.earlySettle);
 
+            s.RoundIndex++;
             nextState = s;
         }
 
