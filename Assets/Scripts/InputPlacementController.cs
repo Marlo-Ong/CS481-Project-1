@@ -72,11 +72,7 @@ namespace SheepGame.Gameplay
             // Hover cell under mouse
             _hasHover = TryGetMouseCell(out _hoverCell);
             if (_hasHover)
-            {
-                //bool legal = controller.IsPlacementLegal(controller.State, controller.State.CurrentPlayer, _hoverCell, _selectedType);
-                var cellPos = grid.CellToWorld(new Vector3Int(_hoverCell.x, 0, _hoverCell.y));
-                hoverTile.transform.position = cellPos;
-            }
+                hoverTile.transform.position = SimToWorld(_hoverCell);
 
             // Early out if not human's turn or simulating
             if (!controller.IsHumanTurn || controller.IsSimulating) return;
@@ -85,7 +81,6 @@ namespace SheepGame.Gameplay
             if (_hasHover && Input.GetMouseButtonDown(0))
                 controller.TryPlaceHumanForce(_hoverCell, _selectedType);
         }
-
         void FixedUpdate()
         {
             if (controller.IsSimulating)
@@ -119,29 +114,6 @@ namespace SheepGame.Gameplay
             force.transform.position = SimToWorld(instance.Cell);
         }
 
-        //void OnGUI()
-        //{
-        //    if (!controller || controller.State == null) return;
-
-        //    var s = controller.State;
-        //    GUILayout.BeginArea(new Rect(10, 10, 280, 200), GUI.skin.box);
-        //    GUILayout.Label($"Current Player: {s.CurrentPlayer} {(controller.IsAITurn ? "(AI)" : "(Human)")}");
-        //    GUILayout.Label($"Scores: P0={s.Score[0]}  P1={s.Score[1]}");
-        //    GUILayout.Space(6);
-        //    GUILayout.Label("Palette (remaining per type):");
-        //    for (int i = 0; i < s.ForceTypes.Length; i++)
-        //    {
-        //        bool selected = (i == _selectedType);
-        //        var spec = s.ForceTypes[i];
-        //        string tag = spec.IsAttractor ? "Attractor" : "Repeller";
-        //        int p = s.CurrentPlayer; // show for current player
-        //        GUILayout.Label($"{(selected ? "➤ " : "  ")}[{i}] {tag}  rem={s.RemainingByPlayerType[p, i]}  (str={spec.Strength}, r={spec.Radius}, e={spec.Exponent})");
-        //    }
-        //    GUILayout.Space(6);
-        //    GUILayout.Label(_hasHover ? $"Hover: ({_hoverCell.x},{_hoverCell.y})" : "Hover: —");
-        //    GUILayout.EndArea();
-        //}
-
         private void DrawBoardStateStatics(GameState state)
         {
             if (state == null)
@@ -151,13 +123,8 @@ namespace SheepGame.Gameplay
             var pen1 = Instantiate(p1PenPrefab);
             var pen2 = Instantiate(p2PenPrefab);
 
-            var rect = LevelData.PenToRect(state.Pens[0]);
-            pen1.transform.position = SimToWorld(new int2(rect.x, rect.y));
-            pen1.transform.localScale = new Vector3(rect.size.x, 0.001f, rect.size.y);
-
-            rect = LevelData.PenToRect(state.Pens[1]);
-            pen2.transform.position = SimToWorld(new int2(rect.x, rect.y));
-            pen2.transform.localScale = new Vector3(rect.size.x, 0.001f, rect.size.y);
+            PenToWorld(LevelData.PenToRect(state.Pens[0]), pen1);
+            PenToWorld(LevelData.PenToRect(state.Pens[1]), pen2);
 
             // Obstacles
             int n = state.N;
@@ -180,8 +147,8 @@ namespace SheepGame.Gameplay
             for (int i = 0; i < state.SheepPos.Length; i++)
             {
                 var sheep = Instantiate(sheepPrefab).transform;
-                var pos = state.SheepPos[i];
-                sheep.position = new Vector3(pos.x, 0, pos.y);
+                var p = state.SheepPos[i];
+                sheep.position = SimToWorld(p);
 
                 previousPositions[i] = sheep.position;
                 sheepInstances.Add(sheep);
@@ -234,25 +201,31 @@ namespace SheepGame.Gameplay
             prev = curr;
         }
 
-        /// <summary>
-        /// Converts a GameState int2 cell to a world position, interpolated by the visual grid.
-        /// </summary>
+        // Center of a tile cell (int2) -> world
         private Vector3 SimToWorld(int2 cell)
         {
-            // Get XZ grid cell from XY simulation cell.
-            var gridCell = new Vector3Int(cell.x, 0, cell.y);
-            return gridCell;
-            return grid.CellToWorld(gridCell);
+            var local = grid.CellToLocalInterpolated(new Vector3(cell.x + 0.5f, 0f, cell.y + 0.5f));
+            return grid.LocalToWorld(local);
         }
 
-        /// <summary>
-        /// Converts a GameState float2 position to a world position, interpolated by the visual grid.
-        /// </summary>
+        // Continuous sim position (float2) -> world
         private Vector3 SimToWorld(float2 pos)
         {
-            var local = new Vector3(pos.x, 0, pos.y);
-            return local;
+            var local = grid.CellToLocalInterpolated(new Vector3(pos.x, 0f, pos.y));
+            return grid.LocalToWorld(local);
         }
+
+        private void PenToWorld(RectInt r, GameObject obj)
+        {
+            var centerSim = new Vector2(r.x + r.width * 0.5f, r.y + r.height * 0.5f);
+            var centerW = grid.LocalToWorld(grid.CellToLocalInterpolated(new Vector3(centerSim.x, 0f, centerSim.y)));
+            obj.transform.position = centerW;
+
+            // scale in world space using grid.cellSize
+            var cs = grid.cellSize;
+            obj.transform.localScale = new Vector3(r.width * cs.x, 0.001f, r.height * cs.z);
+        }
+
 
         public int GetSelectedType() => _selectedType;
         public bool HasHover() => _hasHover;

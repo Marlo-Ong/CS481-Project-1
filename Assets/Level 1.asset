@@ -21,12 +21,12 @@ MonoBehaviour:
   pen0:
     x: 4
     y: 0
-    width: 3
+    width: 2
     height: 1
   pen1:
     x: 4
     y: 9
-    width: 3
+    width: 2
     height: 1
   forceTypes:
   - {fileID: 11400000, guid: e7f7239af4c6f40ae8adb5769bff61e0, type: 2}
