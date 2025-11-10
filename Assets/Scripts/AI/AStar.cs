@@ -50,7 +50,7 @@ public class AStar
         closedSet = new HashSet<Node>();
     }
 
-    public List<int2> FindPath(int2 startPos, int2 targetPos)
+    public List<int2> FindPath(int2 startPos, int2 targetPos, List<ForceInstance> curForces)
     {
         if (!obstacles.InBounds(startPos))
         {
@@ -89,7 +89,8 @@ public class AStar
             // Evaluate non-closed, non-obstacle neighbors
             foreach (Node neighbor in this.GetNeighbors(curNode))
             {
-                if (neighbor == null || obstacles.IsBlocked(neighbor.coordinate) || this.closedSet.Contains(neighbor))
+                if (neighbor == null || obstacles.IsBlocked(neighbor.coordinate) || this.closedSet.Contains(neighbor) || 
+                    GetForceCollision(neighbor, curForces))
                 {
                     continue;
                 }
@@ -215,5 +216,17 @@ public class AStar
                 lowest = node;
         }
         return lowest.coordinate;
+    }
+
+    private bool GetForceCollision(Node node, List<ForceInstance> forces)
+    {
+        foreach (ForceInstance f in forces)
+        {
+            if (f.Cell.x == node.coordinate.x && f.Cell.y == node.coordinate.y)
+            {
+                return true;
+            }
+        }
+        return false;
     }
 }

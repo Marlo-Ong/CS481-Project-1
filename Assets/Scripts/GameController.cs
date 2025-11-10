@@ -286,7 +286,7 @@ namespace SheepGame.Gameplay
 
         private void GeneratePath(int2 curCell, int2 targetCell, int typeIndex)
         {
-            movementPath = State.aStar.FindPath(curCell, targetCell);
+            movementPath = State.aStar.FindPath(curCell, targetCell, State.Forces);
             ForceInstance force;
             foreach (ForceInstance forces in State.Forces)
             {
