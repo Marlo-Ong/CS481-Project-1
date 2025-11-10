@@ -153,11 +153,11 @@ namespace SheepGame.Gameplay
 
             var rect = LevelData.PenToRect(state.Pens[0]);
             pen1.transform.position = SimToWorld(new int2(rect.x, rect.y));
-            pen1.transform.localScale = new Vector3(rect.size.x, 0, rect.size.y);
+            pen1.transform.localScale = new Vector3(rect.size.x, 0.001f, rect.size.y);
 
             rect = LevelData.PenToRect(state.Pens[1]);
             pen2.transform.position = SimToWorld(new int2(rect.x, rect.y));
-            pen2.transform.localScale = new Vector3(rect.size.x, 0, rect.size.y);
+            pen2.transform.localScale = new Vector3(rect.size.x, 0.001f, rect.size.y);
 
             // Obstacles
             int n = state.N;
