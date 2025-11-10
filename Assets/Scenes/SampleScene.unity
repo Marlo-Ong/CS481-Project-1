@@ -9102,7 +9102,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &705858598
 RectTransform:
   m_ObjectHideFlags: 0
@@ -9131,7 +9131,7 @@ CanvasGroup:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 705858597}
   m_Enabled: 1
-  m_Alpha: 1
+  m_Alpha: 0
   m_Interactable: 0
   m_BlocksRaycasts: 0
   m_IgnoreParentGroups: 0
@@ -16130,8 +16130,8 @@ MonoBehaviour:
   boardMask:
     serializedVersion: 2
     m_Bits: 64
-  p1PenPrefab: {fileID: 9084258209113086006, guid: 0f43ad78d12464c39817681ef772fe3e, type: 3}
-  p2PenPrefab: {fileID: 9084258209113086006, guid: 8c2546340281146189f77353326a1f21, type: 3}
+  p1PenPrefab: {fileID: 8847260081996812878, guid: 18c47b137500c7c44ad74181c84854bf, type: 3}
+  p2PenPrefab: {fileID: 2211092890671684757, guid: ae955d4ca79fe0c43b3d4fad21efa955, type: 3}
   forceAttractPrefab: {fileID: 7328719584578877956, guid: 8f787789b1379420087cc62c62de3324, type: 3}
   forceRepelPrefab: {fileID: 7328719584578877956, guid: e3747ec663b7c44aaa05362fc15d35f0, type: 3}
   obstaclePrefab: {fileID: 2511882140321850065, guid: 79e05cd5cc45a4100bbdb45c2fbfa0d0, type: 3}
@@ -24377,6 +24377,7 @@ GameObject:
   - component: {fileID: 2090887821}
   - component: {fileID: 2090887823}
   - component: {fileID: 2090887824}
+  - component: {fileID: 2090887825}
   m_Layer: 0
   m_Name: UIManager
   m_TagString: Untagged
@@ -24476,10 +24477,23 @@ MonoBehaviour:
   - {fileID: 1610745107}
   - {fileID: 714431612}
   - {fileID: 1532704307}
-  playerAccentBar: {fileID: 0}
-  aiAccentBar: {fileID: 0}
-  turnBannerBg: {fileID: 0}
-  turnBannerTxt: {fileID: 0}
+--- !u!114 &2090887825
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2090887820}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0d8c54499e407654b90f9b1ad65f4068, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TutorialManager
+  tutorialText: {fileID: 1130485889}
+  panelGroup: {fileID: 705858599}
+  gameController: {fileID: 1464157930}
+  tutorialLevelIndex: 0
+  tutorialSceneName: Tutorial
 --- !u!1 &2091818023
 GameObject:
   m_ObjectHideFlags: 0

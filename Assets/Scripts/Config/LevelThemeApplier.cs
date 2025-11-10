@@ -12,12 +12,6 @@ public class LevelThemeApplier : MonoBehaviour
     [SerializeField] Renderer groundRenderer;
     [SerializeField] Renderer[] fenceRenderers;
 
-    [Header("HUD accents (optional)")]
-    [SerializeField] Image playerAccentBar;
-    [SerializeField] Image aiAccentBar;
-    [SerializeField] Image turnBannerBg;
-    [SerializeField] TMP_Text turnBannerTxt;
-
     // ---- Shader property ids (class-scope!) ----
     static readonly int PropBase = Shader.PropertyToID("_BaseColor");
     static readonly int PropStd = Shader.PropertyToID("_Color");
@@ -33,7 +27,6 @@ public class LevelThemeApplier : MonoBehaviour
         public bool useFog;
         public Color fogColor;
         public float fogDensity;
-        public Color playerAccent, aiAccent, bannerBg;
     }
 
     // ---------- BALANCED THEMES ----------
@@ -48,9 +41,6 @@ public class LevelThemeApplier : MonoBehaviour
         useFog = false,
         fogColor = new Color(0.70f, 0.80f, 0.90f),
         fogDensity = 0f,
-        playerAccent = new Color32(0x4F, 0xB6, 0xFF, 0xFF),
-        aiAccent = new Color32(0xFF, 0xA0, 0x5E, 0xFF),
-        bannerBg = new Color(1f, 1f, 1f, 0.18f)
     };
 
     Theme Sunset() => new Theme
@@ -64,9 +54,6 @@ public class LevelThemeApplier : MonoBehaviour
         useFog = true,
         fogColor = new Color(0.92f, 0.66f, 0.50f),
         fogDensity = 0.0035f,
-        playerAccent = new Color32(0xFF, 0xB9, 0x60, 0xFF),
-        aiAccent = new Color32(0xFF, 0x72, 0x72, 0xFF),
-        bannerBg = new Color(1f, 1f, 1f, 0.15f)
     };
 
     Theme Night() => new Theme
@@ -80,9 +67,6 @@ public class LevelThemeApplier : MonoBehaviour
         useFog = true,
         fogColor = new Color(0.12f, 0.16f, 0.24f),
         fogDensity = 0.006f,
-        playerAccent = new Color32(0x8A, 0xD0, 0xFF, 0xFF),
-        aiAccent = new Color32(0xBC, 0xA4, 0xFF, 0xFF),
-        bannerBg = new Color(1f, 1f, 1f, 0.12f)
     };
 
     void Awake()
@@ -197,11 +181,5 @@ public class LevelThemeApplier : MonoBehaviour
                 }
             }
         }
-
-        // HUD accents
-        if (playerAccentBar) playerAccentBar.color = t.playerAccent;
-        if (aiAccentBar) aiAccentBar.color = t.aiAccent;
-        if (turnBannerBg) turnBannerBg.color = t.bannerBg;
-        if (turnBannerTxt) turnBannerTxt.color = Color.white;
     }
 }

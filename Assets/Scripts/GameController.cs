@@ -52,6 +52,10 @@ namespace SheepGame.Gameplay
 
         private AdaptiveDifficulty _difficulty;
 
+        //Tutorial
+        private bool _tutHoldSim = false;       // stop sim stepping
+        private bool _tutBlockAI = false;       // block AI turns
+
         public bool IsAITurn
         {
             get
@@ -112,6 +116,20 @@ namespace SheepGame.Gameplay
         void FixedUpdate()
         {
             if (isPaused || State == null) return;
+            // 1) At the very start of your sim step (before StepOneTick / StepXTicks):
+            if (_tutHoldSim)
+            {
+                // Skip advancing physics/simulation this frame
+                return;
+            }
+
+            // 2) Right before AI chooses/executes a move:
+            if (_tutBlockAI && IsAITurn && !IsSimulating)
+            {
+                // If it’s AI’s turn but we’re blocking AI, just don’t let it act yet.
+                return;
+            }
+
 
             if (IsSimulating)
             {
@@ -146,10 +164,19 @@ namespace SheepGame.Gameplay
                         return;
                     }
 
-                    // Next turn begins (CurrentPlayer was flipped at placement time)
-                    // If next player is AI, AIAgentController will notice and act.
                 }
             }
+
+            // Tutorial-only: if human (player 0) has no forces left, keep giving turns to AI
+            if (tutorialAutoAIDump && State != null && !IsSimulating)
+            {
+                // If it's human's turn but they have no forces, hand the turn to AI
+                if (State.CurrentPlayer == 0 && TotalRemainingFor(0) == 0)
+                {
+                    State.CurrentPlayer = 1;
+                }
+            }
+
         }
 
         // ============ Public API for input/AI ============
@@ -200,7 +227,7 @@ namespace SheepGame.Gameplay
 
         private void PlaceForceAndBeginSim(int2 cell, int typeIndex)
         {
-            // Place force for current player
+            // 1) Place force for the CURRENT player (do NOT flip before placing)
             var force = new ForceInstance(cell, typeIndex, State.CurrentPlayer);
             State.Forces.Add(force);
             State.RemainingByPlayerType[State.CurrentPlayer, typeIndex] -= 1;
@@ -208,10 +235,11 @@ namespace SheepGame.Gameplay
             SoundManager.Instance?.PlayPlaceForce();
             ForcePlaced?.Invoke(force);
 
-            // Flip turn BEFORE sim (as agreed)
-            State.CurrentPlayer = 1 - State.CurrentPlayer;
+            // 2) Flip once for normal play — but NOT during tutorial lock
+            if (!tutorialLockToHuman)
+                State.CurrentPlayer = 1 - State.CurrentPlayer;
 
-            // Start animated simulation
+            // 3) Start the sim for this turn
             _ticksTargetThisTurn = Mathf.Max(1, AdaptiveDifficulty.TicksPerTurn);
             TicksPerformedThisTurn = 0;
             _settleRun = 0;
@@ -268,6 +296,58 @@ namespace SheepGame.Gameplay
             bool playerWon = playerScore > aiScore;
             ui?.OnShowResult(playerWon);
             _difficulty?.Rebalance(playerWon, config.ticksPerTurn);
+        }
+
+        // Tutorial helpers
+        public bool tutorialAutoAIDump = false;  // when true, if human has 0 forces, AI auto-runs all its forces
+
+        int TotalRemainingFor(int player)
+        {
+            if (State == null || State.ForceTypes == null) return 0;
+            int sum = 0;
+            int types = State.ForceTypes.Length;
+            for (int t = 0; t < types; t++)
+                sum += State.RemainingByPlayerType[player, t];
+            return sum;
+        }
+
+        public bool tutorialLockToHuman = false;   // when true, never advance off player 0
+        public void TutorialLockToHuman(bool on) => tutorialLockToHuman = on;
+
+        // Called by the tutorial to freeze/unfreeze the simulation stepping
+        public void TutorialHoldSim(bool hold) { _tutHoldSim = hold; }
+        // Called by the tutorial to allow/prevent AI from acting
+        public void TutorialBlockAI(bool block) { _tutBlockAI = block; }
+
+        // Ensure player starts in tutorial scene (prevents AI-first)
+        public void ForcePlayerStartsTutorial(int playerIndex = 0)
+        {
+            if (State != null && State.Score != null) State.CurrentPlayer = Mathf.Clamp(playerIndex, 0, 1);
+        }
+
+        // Simple success check: player is team 0
+        public bool AnySheepInPlayerPen()
+        {
+            return State != null && State.Score != null && State.Score.Length > 0 && State.Score[0] > 0;
+        }
+
+        public void EnsureHumanStartsIfTutorialDone()
+        {
+            // Only for the tutorial level after completion
+            bool tutorialDone = PlayerPrefs.GetInt("TUTORIAL_DONE", 0) == 1;
+            if (!tutorialDone) return;
+
+            // Make sure we start on human and can act
+            if (State != null)
+            {
+                State.CurrentPlayer = 0;   // human
+            }
+
+            // Clear any tutorial locks just in case
+            tutorialLockToHuman = false;
+            _tutHoldSim = false;
+            _tutBlockAI = false;
+            IsSimulating = false;
         }
     }
 }
